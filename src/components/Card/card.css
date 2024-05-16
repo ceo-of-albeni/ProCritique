@@ -1,0 +1,17 @@
+.card_main-div {
+  display: flex;
+  flex-direction: column;
+}
+
+.card_imgcomm-div {
+  display: flex;
+}
+
+.card_starcomm-div {
+  display: flex;
+  flex-direction: column;
+}
+
+#card_comment {
+  background-color: grey;
+}
