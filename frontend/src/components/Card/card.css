@@ -1,0 +1,52 @@
+.card_main-div {
+  margin: 30px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 3px 5px -1px,
+    rgba(0, 0, 0, 0.14) 0 6px 10px 0, rgba(0, 0, 0, 0.12) 0 1px 18px 0;
+}
+
+.card_main-div h3 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 10px 0px 0px 20px ;
+}
+
+.card_imgcomm-div {
+  display: flex;
+  align-items: center;
+}
+
+.card_imgcomm-div img {
+  margin: 20px;
+  width: 116px;
+  height: 116px;
+}
+
+.card_starcomm-div {
+  display: flex;
+  flex-direction: column;
+}
+
+#card_comment-div {
+  background-color: rgb(241, 240, 240);
+  width: 490px;
+  height: 80px;
+  border-radius: 12px;
+  padding: 10px 10px 0px 20px;
+  margin-top: 10px;
+}
+
+.card_ratings {
+  display: flex;
+  align-items: center;
+}
+
+.card_ratings p {
+  margin-right: 140px;
+  margin-left: 20px;
+}
