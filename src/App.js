@@ -10,8 +10,8 @@ const App = () => {
     <>
       <Navbar />
       <UnderNavbar />
-      <Card />
-      {/* <Routing /> */}
+      {/* <Card /> */}
+      <Routing />
     </>
   )
 }
