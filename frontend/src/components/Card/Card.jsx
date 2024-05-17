@@ -15,13 +15,14 @@ const Card = () => {
         <img src="https://i.pinimg.com/736x/b6/a6/d5/b6a6d50de7eb36065b98ebd254d46cd5.jpg" alt="" />
         <div className="card_starcomm-div">
           <div className="card_ratings">
-            <Rating
+            {/* <Rating
               name="simple-controlled"
               value={value}
               onChange={(event, newValue) => {
                 setValue(newValue);
               }}
-            />
+            /> */}
+            <Rating name="read-only" value={value} readOnly />
             <p>Среднее: 5</p>
             <a href="/">Читать все отзывы</a>
           </div>

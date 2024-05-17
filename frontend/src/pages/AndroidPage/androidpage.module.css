@@ -1,0 +1,62 @@
+body {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
+
+.filAndSr {
+  display: flex;
+  margin: 20px 0 0 70px;
+  align-content: center;
+}
+
+.icon {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  margin-right: 20px;
+  border-radius: 30px;
+  overflow: hidden;
+  border: 1px solid black;
+}
+
+.icon:hover {
+  border: 1px solid #d5393a;
+  background-color: #d5393a;
+  transition: 0.5s;
+}
+
+.icon i:hover {
+  color: white;
+}
+
+.icon i {
+  position: relative;
+  color: rgb(0, 0, 0);
+  font-size: 25px;
+  margin-top: 23px;
+  transition: all 0.25s ease;
+  margin-left: 12px;
+}
+
+.sr_inp {
+  width: 250px;
+  height: 40px;
+  margin-top: 7px;
+  padding-left: 20px;
+}
+
+.mainDiv2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 50px 50px 50px;
+}
+
+.secondDiv {
+  display: flex;
+  flex-wrap: wrap;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 40px 40px 20px 80px;
+}

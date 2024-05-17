@@ -2,7 +2,7 @@ import React from "react";
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
-import "./Navbar.css";
+import "./navbar.css";
 import { useNavigate } from "react-router-dom";
 
 const Navabr = () => {
