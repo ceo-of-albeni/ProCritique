@@ -11,10 +11,46 @@ const common_1 = require("@nestjs/common");
 const database_1 = require("firebase/database");
 const firebase_config_1 = require("../../firebase.config");
 let TutorialService = class TutorialService {
-    async createData(data) {
-        const dataRef = (0, database_1.ref)(firebase_config_1.firebaseDataBase, 'Data');
-        const newElementRef = (0, database_1.push)(dataRef, { dataRef: data });
-        await (0, database_1.set)(newElementRef, data);
+    constructor() {
+        this.dbRef = (0, database_1.ref)(firebase_config_1.firebaseDataBase);
+    }
+    async createUserData(userId, data) {
+        await (0, database_1.set)((0, database_1.ref)(firebase_config_1.firebaseDataBase, 'users/' + userId), data);
+    }
+    async createCourseData(courseId, data) {
+        await (0, database_1.set)((0, database_1.ref)(firebase_config_1.firebaseDataBase, 'courses/' + courseId), data);
+    }
+    async addCommentToCourse(courseId, commentId, data) {
+        await (0, database_1.set)((0, database_1.ref)(firebase_config_1.firebaseDataBase, `courses/${courseId}/comments/${commentId}`), data);
+    }
+    async getUserData(userId) {
+        const snapshot = await (0, database_1.get)((0, database_1.child)(this.dbRef, `users/${userId}`));
+        return snapshot.exists() ? snapshot.val() : null;
+    }
+    async getCourseData(courseId) {
+        const snapshot = await (0, database_1.get)((0, database_1.child)(this.dbRef, `courses/${courseId}`));
+        return snapshot.exists() ? snapshot.val() : null;
+    }
+    async getCoursesByCategory(category) {
+        const coursesRef = (0, database_1.query)((0, database_1.ref)(firebase_config_1.firebaseDataBase, 'courses'), (0, database_1.orderByChild)('category'), (0, database_1.equalTo)(category));
+        const snapshot = await (0, database_1.get)(coursesRef);
+        const courses = [];
+        if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+                courses.push(childSnapshot.val());
+            });
+        }
+        return courses;
+    }
+    async getAllCourses() {
+        const snapshot = await (0, database_1.get)((0, database_1.ref)(firebase_config_1.firebaseDataBase, 'courses'));
+        const courses = [];
+        if (snapshot.exists()) {
+            snapshot.forEach(childSnapshot => {
+                courses.push(childSnapshot.val());
+            });
+        }
+        return courses;
     }
 };
 exports.TutorialService = TutorialService;

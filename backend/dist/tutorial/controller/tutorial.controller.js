@@ -19,18 +19,81 @@ let TutorialController = class TutorialController {
     constructor(tutorialService) {
         this.tutorialService = tutorialService;
     }
-    async createData(data) {
-        await this.tutorialService.createData(data);
+    async createUserData(data) {
+        const userId = 'user' + Date.now();
+        await this.tutorialService.createUserData(userId, data);
+    }
+    async createCourseData(data) {
+        const courseId = 'course' + Date.now();
+        await this.tutorialService.createCourseData(courseId, data);
+    }
+    async addCommentToCourse(courseId, data) {
+        const commentId = 'comment' + Date.now();
+        await this.tutorialService.addCommentToCourse(courseId, commentId, data);
+    }
+    async getUserData(userId) {
+        return await this.tutorialService.getUserData(userId);
+    }
+    async getCourseData(courseId) {
+        return await this.tutorialService.getCourseData(courseId);
+    }
+    async getCoursesByCategory(category) {
+        return await this.tutorialService.getCoursesByCategory(category);
+    }
+    async getAllCourses() {
+        return await this.tutorialService.getAllCourses();
     }
 };
 exports.TutorialController = TutorialController;
 __decorate([
-    (0, common_1.Post)('createData'),
+    (0, common_1.Post)('createUser'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], TutorialController.prototype, "createData", null);
+], TutorialController.prototype, "createUserData", null);
+__decorate([
+    (0, common_1.Post)('createCourse'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "createCourseData", null);
+__decorate([
+    (0, common_1.Post)('addComment/:courseId'),
+    __param(0, (0, common_1.Param)('courseId')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "addCommentToCourse", null);
+__decorate([
+    (0, common_1.Get)('getUser/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getUserData", null);
+__decorate([
+    (0, common_1.Get)('getCourse/:courseId'),
+    __param(0, (0, common_1.Param)('courseId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getCourseData", null);
+__decorate([
+    (0, common_1.Get)('getCoursesByCategory'),
+    __param(0, (0, common_1.Query)('category')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getCoursesByCategory", null);
+__decorate([
+    (0, common_1.Get)('getAllCourses'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getAllCourses", null);
 exports.TutorialController = TutorialController = __decorate([
     (0, common_1.Controller)('tutorial'),
     __metadata("design:paramtypes", [tutorial_service_1.TutorialService])
