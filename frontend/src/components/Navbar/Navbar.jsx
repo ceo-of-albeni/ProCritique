@@ -2,10 +2,10 @@ import React from "react";
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
-import "./navbar.css";
+import "./Navbar.css";
 import { useNavigate } from "react-router-dom";
 
-const Navabr = () => {
+const Navbar = () => {
   const navigate = useNavigate()
   return (
     <div className="header_navbar" style={{"backgroundColor" : "#6A5ACD"}}>
@@ -40,4 +40,4 @@ const Navabr = () => {
   );
 };
 
-export default Navabr;
+export default Navbar;
