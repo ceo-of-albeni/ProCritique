@@ -4,8 +4,12 @@ import Navbar from './components/Navbar/Navbar'
 import UnderNavbar from './components/UnderNavbar/UnderNavbar'
 import Routing from './Routing'
 import Card from './components/Card/Card'
+import { initializeFirebaseAnalytics } from './firebase.config';
 
 const App = () => {
+  useEffect(() => {
+    initializeFirebaseAnalytics();
+  }, []);
   return (
     <>
       <Navbar />
