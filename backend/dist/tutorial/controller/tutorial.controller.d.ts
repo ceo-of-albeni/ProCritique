@@ -1,10 +1,13 @@
 import { TutorialService } from 'src/tutorial/service/tutorial.service';
+import { CreateUserDto } from 'src/dto/create-user.dto';
+import { CreateCourseDto } from 'src/dto/create-course.dto';
+import { CreateCommentDto } from 'src/dto/create-comment.dto';
 export declare class TutorialController {
     private readonly tutorialService;
     constructor(tutorialService: TutorialService);
-    createUserData(data: any): Promise<void>;
-    createCourseData(data: any): Promise<void>;
-    addCommentToCourse(courseId: string, data: any): Promise<void>;
+    createUserData(createUserDto: CreateUserDto): Promise<void>;
+    createCourseData(createCourseDto: CreateCourseDto): Promise<void>;
+    addCommentToCourse(courseId: string, createCommentDto: CreateCommentDto): Promise<void>;
     getUserData(userId: string): Promise<any>;
     getCourseData(courseId: string): Promise<any>;
     getCoursesByCategory(category: string): Promise<any[]>;
