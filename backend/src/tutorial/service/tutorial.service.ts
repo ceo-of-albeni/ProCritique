@@ -9,6 +9,14 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class TutorialService {
+
+  async getAllUsers(): Promise<any[]> {
+    const usersRef = dbRef(database, 'users');
+    const snapshot = await get(usersRef);
+    const users = snapshot.val();
+    return Object.values(users || {});
+  }
+  
   async createUserData(userId: string, createUserDto: CreateUserDto): Promise<void> {
     const userRef = dbRef(database, 'users/' + userId);
     await set(userRef, createUserDto);
