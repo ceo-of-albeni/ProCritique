@@ -1,4 +1,4 @@
 declare const app: import("@firebase/app").FirebaseApp;
-declare let analytics: any;
-declare const firebaseDataBase: import("@firebase/database").Database;
-export { app, analytics, firebaseDataBase };
+declare const database: import("@firebase/database").Database;
+declare const storage: import("@firebase/storage").FirebaseStorage;
+export { app, database, storage };

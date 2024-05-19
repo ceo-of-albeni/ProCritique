@@ -19,6 +19,7 @@ const create_user_dto_1 = require("../../dto/create-user.dto");
 const create_course_dto_1 = require("../../dto/create-course.dto");
 const create_comment_dto_1 = require("../../dto/create-comment.dto");
 const swagger_1 = require("@nestjs/swagger");
+const platform_express_1 = require("@nestjs/platform-express");
 let TutorialController = class TutorialController {
     constructor(tutorialService) {
         this.tutorialService = tutorialService;
@@ -26,6 +27,9 @@ let TutorialController = class TutorialController {
     async createUserData(createUserDto) {
         const userId = 'user' + Date.now();
         await this.tutorialService.createUserData(userId, createUserDto);
+    }
+    async getUserData(userId) {
+        return await this.tutorialService.getUserData(userId);
     }
     async createCourseData(createCourseDto) {
         const courseId = 'course' + Date.now();
@@ -35,9 +39,6 @@ let TutorialController = class TutorialController {
         const commentId = 'comment' + Date.now();
         await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto);
     }
-    async getUserData(userId) {
-        return await this.tutorialService.getUserData(userId);
-    }
     async getCourseData(courseId) {
         return await this.tutorialService.getCourseData(courseId);
     }
@@ -46,6 +47,20 @@ let TutorialController = class TutorialController {
     }
     async getAllCourses() {
         return await this.tutorialService.getAllCourses();
+    }
+    async getCoursesSortedByRating(order) {
+        return await this.tutorialService.getCoursesSortedByRating(order);
+    }
+    async getTeachersAndMentors(courseId) {
+        return await this.tutorialService.getTeachersAndMentors(courseId);
+    }
+    async uploadFile(file) {
+        const url = await this.tutorialService.uploadFile(file);
+        return { url };
+    }
+    async getFileUrl(fileName) {
+        const url = await this.tutorialService.getFileUrl(fileName);
+        return { url };
     }
 };
 exports.TutorialController = TutorialController;
@@ -59,6 +74,16 @@ __decorate([
     __metadata("design:paramtypes", [create_user_dto_1.CreateUserDto]),
     __metadata("design:returntype", Promise)
 ], TutorialController.prototype, "createUserData", null);
+__decorate([
+    (0, common_1.Get)('getUser/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get user data by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return user data.' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'User not found.' }),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getUserData", null);
 __decorate([
     (0, common_1.Post)('createCourse'),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new course' }),
@@ -80,16 +105,6 @@ __decorate([
     __metadata("design:paramtypes", [String, create_comment_dto_1.CreateCommentDto]),
     __metadata("design:returntype", Promise)
 ], TutorialController.prototype, "addCommentToCourse", null);
-__decorate([
-    (0, common_1.Get)('getUser/:userId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get user data by ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return user data.' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'User not found.' }),
-    __param(0, (0, common_1.Param)('userId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], TutorialController.prototype, "getUserData", null);
 __decorate([
     (0, common_1.Get)('getCourse/:courseId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get course data by ID' }),
@@ -117,6 +132,59 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], TutorialController.prototype, "getAllCourses", null);
+__decorate([
+    (0, common_1.Get)('getCoursesSortedByRating'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get courses sorted by rating' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return sorted courses by rating.' }),
+    __param(0, (0, common_1.Query)('order')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getCoursesSortedByRating", null);
+__decorate([
+    (0, common_1.Get)('getTeachersAndMentors/:courseId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get teachers and mentors by course ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return teachers and mentors.' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Course not found.' }),
+    __param(0, (0, common_1.Param)('courseId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getTeachersAndMentors", null);
+__decorate([
+    (0, common_1.Post)('upload'),
+    (0, swagger_1.ApiOperation)({ summary: 'Upload a file to Firebase Storage' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'The file has been successfully uploaded.' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad Request.' }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "uploadFile", null);
+__decorate([
+    (0, common_1.Get)('file/:fileName'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get the URL of a file in Firebase Storage' }),
+    (0, swagger_1.ApiParam)({ name: 'fileName', required: true, description: 'The name of the file' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return the file URL.' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'File not found.' }),
+    __param(0, (0, common_1.Param)('fileName')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getFileUrl", null);
 exports.TutorialController = TutorialController = __decorate([
     (0, swagger_1.ApiTags)('tutorial'),
     (0, common_1.Controller)('tutorial'),
