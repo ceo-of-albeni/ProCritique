@@ -20,7 +20,7 @@ function reducer(state = INIT_STATE, action) {
   }
 }
 
-const API = "http://localhost:3001/api";
+const API = "http://localhost:3001/api/";
 
 const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -63,12 +63,14 @@ const AuthContextProvider = ({ children }) => {
 
   async function handleRegister(newObj) {
     try {
-      const res = await axios.post(`${API}/auth/register`, newObj);
-      // navigate("/profile");
+      const res = await axios.post(
+        `http://localhost:3001/tutorial/createUser`,
+        newObj
+      );
+      console.log("ye");
     } catch (err) {
       console.log(err);
       setError(err);
-    } finally {
     }
   }
 
