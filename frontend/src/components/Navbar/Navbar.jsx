@@ -8,12 +8,14 @@ import { authContext } from "../../contexts/authContext"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 
-const Navabr = () => {
+const Navbar = () => {
   const [activeModal, setActiveModal] = useState("login");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { handleLogin, setError } = useContext(authContext);
+  
+  const navigate = useNavigate()
 
   const closeModal = () => {
     setActiveModal(null);
@@ -61,8 +63,6 @@ const Navabr = () => {
     setError(false);
   }, []);
 
-
-  const navigate = useNavigate()
   return (
     <>
         {activeModal === "login" && (
@@ -136,4 +136,4 @@ const Navabr = () => {
   );
 };
 
-export default Navabr;
+export default Navbar;
