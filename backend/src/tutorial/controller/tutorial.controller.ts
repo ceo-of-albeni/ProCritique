@@ -29,6 +29,13 @@ export class TutorialController {
     return await this.tutorialService.getUserData(userId);
   }
 
+  @Get('getAllUsers')
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'Return all users.' })
+  async getAllUsers(): Promise<any[]> {
+    return await this.tutorialService.getAllUsers();
+  }
+
   @Post('createCourse')
   @ApiOperation({ summary: 'Create a new course' })
   @ApiResponse({ status: 201, description: 'The course has been successfully created.' })
