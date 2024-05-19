@@ -7,18 +7,23 @@ async function start() {
     const PORT = process.env.PORT || 3001;
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
+<<<<<<< HEAD
         origin: 'http://localhost:3000',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+=======
+        origin: "http://localhost:3000",
+        methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+>>>>>>> f8828ab14422a2aa9c7e17176b0008d485e9ee66
         credentials: true,
     });
     const config = new swagger_1.DocumentBuilder()
-        .setTitle('ProCritique')
-        .setDescription('Документация REST API')
-        .setVersion('1.0.0')
-        .addTag('Sandzyaru')
+        .setTitle("ProCritique")
+        .setDescription("Документация REST API")
+        .setVersion("1.0.0")
+        .addTag("Sandzyaru")
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
-    swagger_1.SwaggerModule.setup('/api/docs', app, document);
+    swagger_1.SwaggerModule.setup("/api/docs", app, document);
     await app.listen(PORT, () => console.log(`Server started on port = ${PORT}`));
 }
 start();

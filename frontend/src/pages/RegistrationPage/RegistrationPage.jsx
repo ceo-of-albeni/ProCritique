@@ -11,34 +11,30 @@ export function RegistrationPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [username, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+  // const [passwordConfirm, setPasswordConfirm] = useState("");
 
   const createUser = async () => {
     if (
-      !firstName.trim() ||
-      !lastName.trim() ||
+      !username.trim() ||
       !email.trim() ||
-      !password.trim() ||
-      !passwordConfirm.trim()
+      !password.trim()
     ) {
       alert("Some inputs are empty!");
       return;
     }
 
-    if (password !== passwordConfirm) {
-      alert("Passwords are not the same!");
-      return;
-    }
+    // if (password !== passwordConfirm) {
+    //   alert("Passwords are not the same!");
+    //   return;
+    // }
 
     setIsLoading(true);
 
     let newObj = {
-      firstName: firstName,
-      lastName: lastName,
+      username: username,
       email: email,
       password: password,
     };
@@ -61,17 +57,16 @@ export function RegistrationPage() {
     createUser();
 
     if (
-      !firstName.trim() ||
-      !lastName.trim() ||
+      !username.trim() ||
       !email.trim() ||
-      !password.trim() ||
-      !passwordConfirm.trim() ||
-      password !== passwordConfirm
+      !password.trim() 
+      // !passwordConfirm.trim() ||
+      // password !== passwordConfirm
     ) {
       // alert("You filled the form incorrectly!!");
       // return;
     } else {
-      navigate("/confirm");
+      navigate("/");
     }
   };
 
@@ -84,19 +79,12 @@ export function RegistrationPage() {
           <label>First name</label>
           <input
             type="text"
-            value={firstName}
+            value={username}
             onChange={e => setFirstName(e.target.value)}
             placeholder="First name"
             name="name"
           />
-          <label>Last name</label>
-          <input
-            type="text"
-            value={lastName}
-            onChange={e => setLastName(e.target.value)}
-            placeholder="Last name"
-            name="surname"
-          />
+          
           <label>Email</label>
           <input
             type="text"
@@ -113,14 +101,14 @@ export function RegistrationPage() {
             placeholder="Password"
             name="password"
           />
-          <label>Confirm password</label>
+          {/* <label>Confirm password</label>
           <input
             type="password"
             value={passwordConfirm}
             onChange={e => setPasswordConfirm(e.target.value)}
             placeholder="Confirm password"
             name="con_password"
-          />
+          /> */}
           <button onClick={openConfirm}>
             Sign Up
           </button>
