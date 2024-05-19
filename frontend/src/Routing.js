@@ -7,6 +7,7 @@ import FrontPage from "./pages/FrontPage/FrontPage";
 import FullStackPage from "./pages/FullStackPage/FullStackPage";
 import IOS from "./pages/IOS/IOS";
 import UXUI from "./pages/UXUi/UXUI";
+import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
 
 const Routing = () => {
   const PUBLIC_ROUTES = [
@@ -50,10 +51,15 @@ const Routing = () => {
       element: <UXUI />,
       id: 8,
     },
+    {
+      link: "/register",
+      element: <RegistrationPage />,
+      id: 9,
+    },
   ];
   return (
     <Routes>
-      {PUBLIC_ROUTES.map(item => (
+      {PUBLIC_ROUTES.map((item) => (
         <Route path={item.link} element={item.element} key={item.id} />
       ))}
     </Routes>
