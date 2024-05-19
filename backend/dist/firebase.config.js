@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.storage = exports.database = exports.app = void 0;
+exports.auth = exports.storage = exports.database = exports.app = void 0;
 const app_1 = require("firebase/app");
 const database_1 = require("firebase/database");
 const storage_1 = require("firebase/storage");
+const auth_1 = require("firebase/auth");
 const firebaseConfig = {
     apiKey: 'AIzaSyDS8M1CuFI9RSVp67RiMR0HPpzZXaLvvH0',
     authDomain: 'procritique-ce5f7.firebaseapp.com',
@@ -20,4 +21,6 @@ const database = (0, database_1.getDatabase)(app);
 exports.database = database;
 const storage = (0, storage_1.getStorage)(app);
 exports.storage = storage;
+const auth = (0, auth_1.getAuth)(app);
+exports.auth = auth;
 //# sourceMappingURL=firebase.config.js.map

@@ -3,7 +3,7 @@ import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
 import { database, storage } from 'src/firebase.config';
-import { ref as dbRef, get, set, update, query, orderByChild, equalTo } from 'firebase/database';
+import { ref as dbRef, get, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,7 +16,7 @@ export class TutorialService {
     const users = snapshot.val();
     return Object.values(users || {});
   }
-  
+
   async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
     const userId = uuidv4(); // Генерация уникального идентификатора для пользователя
     const userRef = dbRef(database, 'users/' + userId);
@@ -51,6 +51,23 @@ export class TutorialService {
     }
     course.comments[commentId] = createCommentDto;
     await update(courseRef, { comments: course.comments });
+    await this.updateCourseRating(courseId);
+  }
+
+  async deleteCommentFromCourse(courseId: string, commentId: string): Promise<void> {
+    const courseRef = dbRef(database, 'courses/' + courseId);
+    const snapshot = await get(courseRef);
+    const course = snapshot.val();
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+    if (course.comments && course.comments[commentId]) {
+      delete course.comments[commentId];
+      await update(courseRef, { comments: course.comments });
+      await this.updateCourseRating(courseId);
+    } else {
+      throw new NotFoundException('Comment not found');
+    }
   }
 
   async getCourseData(courseId: string): Promise<any> {
@@ -77,19 +94,6 @@ export class TutorialService {
     return Object.values(courses || {});
   }
 
-  async getCoursesSortedByRating(order: string): Promise<any[]> {
-    const coursesRef = dbRef(database, 'courses');
-    const snapshot = await get(coursesRef);
-    const courses = snapshot.val();
-    const coursesArray = Object.values(courses || {});
-    coursesArray.sort((a: any, b: any) => {
-      const ratingA = this.calculateAverageRating(a.comments);
-      const ratingB = this.calculateAverageRating(b.comments);
-      return order === 'asc' ? ratingA - ratingB : ratingB - ratingA;
-    });
-    return coursesArray;
-  }
-
   async getTeachersAndMentors(courseId: string): Promise<any> {
     const courseRef = dbRef(database, 'courses/' + courseId);
     const snapshot = await get(courseRef);
@@ -101,12 +105,6 @@ export class TutorialService {
       teachers: course.teachers,
       mentors: course.mentors,
     };
-  }
-
-  private calculateAverageRating(comments: any): number {
-    const ratings = Object.values(comments || {}).map((comment: any) => comment.rating);
-    const sum = ratings.reduce((a, b) => a + b, 0);
-    return ratings.length ? sum / ratings.length : 0;
   }
 
   async uploadFile(file: Express.Multer.File): Promise<string> {
@@ -125,5 +123,35 @@ export class TutorialService {
     } catch (error) {
       throw new NotFoundException(`File ${fileName} not found`);
     }
+  }
+
+  async getCoursesSortedByRating(order: string): Promise<any[]> {
+    const coursesRef = dbRef(database, 'courses');
+    const snapshot = await get(coursesRef);
+    const courses = snapshot.val();
+    const coursesArray = Object.values(courses || {});
+    coursesArray.sort((a: any, b: any) => {
+      const ratingA = this.calculateAverageRating(a.comments);
+      const ratingB = this.calculateAverageRating(b.comments);
+      return order === 'asc' ? ratingA - ratingB : ratingB - ratingA;
+    });
+    return coursesArray;
+  }
+
+  private async updateCourseRating(courseId: string): Promise<void> {
+    const courseRef = dbRef(database, 'courses/' + courseId);
+    const snapshot = await get(courseRef);
+    const course = snapshot.val();
+    if (course && course.comments) {
+      const ratings = Object.values(course.comments).map((comment: any) => comment.rating);
+      const averageRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : '0';
+      await update(courseRef, { common_rate: averageRating });
+    }
+  }
+
+  private calculateAverageRating(comments: any): number {
+    const ratings = Object.values(comments || {}).map((comment: any) => comment.rating);
+    const sum = ratings.reduce((a, b) => a + b, 0);
+    return ratings.length ? sum / ratings.length : 0;
   }
 }

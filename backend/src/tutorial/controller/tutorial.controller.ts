@@ -56,6 +56,17 @@ export class TutorialController {
     await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto);
   }
 
+  @Post('deleteComment/:courseId/:commentId')
+  @ApiOperation({ summary: 'Delete a comment from a course' })
+  @ApiResponse({ status: 200, description: 'The comment has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Comment not found.' })
+  async deleteCommentFromCourse(
+    @Param('courseId') courseId: string,
+    @Param('commentId') commentId: string
+  ): Promise<void> {
+    await this.tutorialService.deleteCommentFromCourse(courseId, commentId);
+  }
+
   @Get('getCourse/:courseId')
   @ApiOperation({ summary: 'Get course data by ID' })
   @ApiResponse({ status: 200, description: 'Return course data.' })
