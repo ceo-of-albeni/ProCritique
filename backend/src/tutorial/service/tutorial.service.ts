@@ -3,7 +3,7 @@ import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
 import { database, storage } from 'src/firebase.config';
-import { ref as dbRef, get, set, update, child, query, orderByChild, equalTo } from 'firebase/database';
+import { ref as dbRef, get, set, update, query, orderByChild, equalTo } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,9 +17,11 @@ export class TutorialService {
     return Object.values(users || {});
   }
   
-  async createUserData(userId: string, createUserDto: CreateUserDto): Promise<void> {
+  async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
+    const userId = uuidv4(); // Генерация уникального идентификатора для пользователя
     const userRef = dbRef(database, 'users/' + userId);
-    await set(userRef, createUserDto);
+    await set(userRef, { id: userId, ...createUserDto });
+    return { id: userId };
   }
 
   async getUserData(userId: string): Promise<any> {

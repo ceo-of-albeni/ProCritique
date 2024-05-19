@@ -16,9 +16,8 @@ export class TutorialController {
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async createUserData(@Body() createUserDto: CreateUserDto): Promise<void> {
-    const userId = 'user' + Date.now(); 
-    await this.tutorialService.createUserData(userId, createUserDto);
+  async createUserData(@Body() createUserDto: CreateUserDto): Promise<{ id: string }> {
+    return await this.tutorialService.createUserData(createUserDto);
   }
 
   @Get('getUser/:userId')

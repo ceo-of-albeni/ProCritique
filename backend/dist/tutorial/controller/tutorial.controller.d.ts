@@ -8,6 +8,7 @@ export declare class TutorialController {
     constructor(tutorialService: TutorialService);
     createUserData(createUserDto: CreateUserDto): Promise<void>;
     getUserData(userId: string): Promise<any>;
+    getAllUsers(): Promise<any[]>;
     createCourseData(createCourseDto: CreateCourseDto): Promise<void>;
     addCommentToCourse(courseId: string, createCommentDto: CreateCommentDto): Promise<void>;
     getCourseData(courseId: string): Promise<any>;

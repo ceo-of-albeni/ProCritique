@@ -6,6 +6,11 @@ const swagger_1 = require("@nestjs/swagger");
 async function start() {
     const PORT = process.env.PORT || 3001;
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.enableCors({
+        origin: 'http://localhost:3000',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        credentials: true,
+    });
     const config = new swagger_1.DocumentBuilder()
         .setTitle('ProCritique')
         .setDescription('Документация REST API')
