@@ -1,27 +1,54 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
-import { database, storage } from 'src/firebase.config';
+import { database, firestore, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage } from 'src/firebase.config';
 import { ref as dbRef, get, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage';
+import { LoginUserDto } from 'src/dto/login-user.dto';
 import { v4 as uuidv4 } from 'uuid';
+import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
 
 @Injectable()
 export class TutorialService {
+  async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
+    const { email, password, username } = createUserDto;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      await setDoc(doc(firestore, 'users', user.uid), {
+        email,
+        username,
+      });
+
+      return { id: user.uid };
+    } catch (error) {
+      throw new UnauthorizedException('Error creating user');
+    }
+  }
+
+  async loginUser(loginUserDto: LoginUserDto): Promise<{ idToken: string }> {
+    const { email, password } = loginUserDto;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      const idToken = await user.getIdToken();
+
+      return { idToken };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  }
 
   async getAllUsers(): Promise<any[]> {
     const usersRef = dbRef(database, 'users');
     const snapshot = await get(usersRef);
     const users = snapshot.val();
     return Object.values(users || {});
-  }
-
-  async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
-    const userId = uuidv4(); // Генерация уникального идентификатора для пользователя
-    const userRef = dbRef(database, 'users/' + userId);
-    await set(userRef, { id: userId, ...createUserDto });
-    return { id: userId };
   }
 
   async getUserData(userId: string): Promise<any> {

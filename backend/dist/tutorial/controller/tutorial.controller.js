@@ -20,9 +20,13 @@ const create_course_dto_1 = require("../../dto/create-course.dto");
 const create_comment_dto_1 = require("../../dto/create-comment.dto");
 const swagger_1 = require("@nestjs/swagger");
 const platform_express_1 = require("@nestjs/platform-express");
+const login_user_dto_1 = require("../../dto/login-user.dto");
 let TutorialController = class TutorialController {
     constructor(tutorialService) {
         this.tutorialService = tutorialService;
+    }
+    async loginUser(loginUserDto) {
+        return await this.tutorialService.loginUser(loginUserDto);
     }
     async createUserData(createUserDto) {
         return await this.tutorialService.createUserData(createUserDto);
@@ -69,6 +73,19 @@ let TutorialController = class TutorialController {
     }
 };
 exports.TutorialController = TutorialController;
+__decorate([
+    (0, common_1.Post)('login'),
+    (0, swagger_1.ApiOperation)({ summary: 'Login a user' }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: 'The user has been successfully logged in.',
+    }),
+    (0, swagger_1.ApiResponse)({ status: 401, description: 'Unauthorized.' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [login_user_dto_1.LoginUserDto]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "loginUser", null);
 __decorate([
     (0, common_1.Post)('createUser'),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new user' }),

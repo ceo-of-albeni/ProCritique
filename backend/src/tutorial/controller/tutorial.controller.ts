@@ -6,11 +6,24 @@ import { CreateCommentDto } from 'src/dto/create-comment.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody, ApiParam } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { LoginUserDto } from 'src/dto/login-user.dto';
+
 
 @ApiTags('tutorial')
 @Controller('tutorial')
 export class TutorialController {
   constructor(private readonly tutorialService: TutorialService) {}
+
+  @Post('login')
+  @ApiOperation({ summary: 'Login a user' })
+  @ApiResponse({
+    status: 201,
+    description: 'The user has been successfully logged in.',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  async loginUser(@Body() loginUserDto: LoginUserDto): Promise<{ idToken: string }> {
+    return await this.tutorialService.loginUser(loginUserDto);
+  }
 
   @Post('createUser')
   @ApiOperation({ summary: 'Create a new user' })

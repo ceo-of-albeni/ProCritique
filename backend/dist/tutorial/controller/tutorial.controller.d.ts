@@ -3,9 +3,13 @@ import { TutorialService } from 'src/tutorial/service/tutorial.service';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
+import { LoginUserDto } from 'src/dto/login-user.dto';
 export declare class TutorialController {
     private readonly tutorialService;
     constructor(tutorialService: TutorialService);
+    loginUser(loginUserDto: LoginUserDto): Promise<{
+        idToken: string;
+    }>;
     createUserData(createUserDto: CreateUserDto): Promise<{
         id: string;
     }>;
