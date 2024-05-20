@@ -8,6 +8,7 @@ import FullStackPage from "./pages/FullStackPage/FullStackPage";
 import IOS from "./pages/IOS/IOS";
 import UXUI from "./pages/UXUi/UXUI";
 import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
+import Detailed from "./components/Detailed/Detailed";
 
 const Routing = () => {
   const PUBLIC_ROUTES = [
@@ -55,6 +56,11 @@ const Routing = () => {
       link: "/register",
       element: <RegistrationPage />,
       id: 9,
+    },
+    {
+      link: "/courses/:id",
+      element: <Detailed />,
+      id: 10,
     },
   ];
   return (

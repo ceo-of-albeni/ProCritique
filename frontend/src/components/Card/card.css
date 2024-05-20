@@ -14,7 +14,7 @@
 .card_main-div h3 {
   font-size: 20px;
   font-weight: 500;
-  margin: 10px 0px 0px 20px ;
+  margin: 10px 0px 0px 20px;
 }
 
 .card_imgcomm-div {
@@ -36,10 +36,12 @@
 #card_comment-div {
   background-color: rgb(241, 240, 240);
   width: 490px;
-  height: 80px;
+  height: fit-content;
   border-radius: 12px;
   padding: 10px 10px 0px 20px;
   margin-top: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .card_ratings {

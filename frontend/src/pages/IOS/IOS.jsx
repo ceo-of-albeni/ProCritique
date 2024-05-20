@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import CoursesList from "../../components/CoursesList/CoursesList";
 
 const IOS = () => {
   return (
-    <div>IOS</div>
-  )
-}
+    <div>
+      <CoursesList />
+    </div>
+  );
+};
 
-export default IOS
+export default IOS;
