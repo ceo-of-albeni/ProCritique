@@ -1,19 +1,32 @@
 import React, { useEffect, useContext, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { coursesContext } from "../../contexts/coursesContext";
 import Card from "../Card/Card";
 import Pagination from "@mui/material/Pagination";
-import Footer from "../Footer/Footer";
+import "./courseslist.css";
 
-const CoursesList = () => {
-  const { getAllCourses, courses, getPhoto, photo } =
-    useContext(coursesContext);
+const CoursesList = ({ category }) => {
+  const {
+    getAllCourses,
+    courses,
+    getPhoto,
+    photo,
+    coursesByCategory,
+    getCoursesByCategory,
+  } = useContext(coursesContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    getCoursesByCategory(category);
+    console.log(category);
+  }, []);
+
+  console.log(coursesByCategory);
+
   const itemsOnPage = 4;
 
-  const count = Math.ceil(courses.length / itemsOnPage);
+  const count = Math.ceil(coursesByCategory.length / itemsOnPage);
 
   const handlePage = (e, p) => {
     setPage(p);
@@ -22,27 +35,30 @@ const CoursesList = () => {
   function currentData() {
     const begin = (page - 1) * itemsOnPage;
     const end = begin + itemsOnPage;
-    return courses.slice(begin, end);
+    return coursesByCategory.slice(begin, end);
   }
 
   useEffect(() => {
-    getAllCourses();
+    getCoursesByCategory(category);
     getPhoto();
   }, []);
 
   useEffect(() => {
-    getAllCourses();
+    getCoursesByCategory(category);
   }, [searchParams]);
 
   return (
     <div>
-      <div
-        className="d-flex flex-column align-items-center mt-5"
-        style={{ marginBottom: "100px" }}>
-        <h2>Courses</h2>
+      <div className="list_main-div">
+        <h1>Courses</h1>
+        <div className="list_sort-div">
+          <p>Сортировать: </p>
+          <button className="sort_btn">по рейтингу</button>
+          <button className="sort_btn">по умолчанию</button>
+        </div>
 
-        <div className="d-flex justify-content-center flex-wrap">
-          {courses ? (
+        <div className="list_courses-div">
+          {coursesByCategory ? (
             currentData().map((item) => <Card key={item.id} item={item} />)
           ) : (
             <h3>Loading...</h3>
@@ -56,7 +72,6 @@ const CoursesList = () => {
           onChange={handlePage}
         />
       </div>
-      <Footer />
     </div>
   );
 };

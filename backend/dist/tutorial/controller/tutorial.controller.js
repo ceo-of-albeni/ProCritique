@@ -31,6 +31,9 @@ let TutorialController = class TutorialController {
     async getUserData(userId) {
         return await this.tutorialService.getUserData(userId);
     }
+    async getAllUsers() {
+        return await this.tutorialService.getAllUsers();
+    }
     async createCourseData(createCourseDto) {
         const courseId = 'course' + Date.now();
         await this.tutorialService.createCourseData(courseId, createCourseDto);
@@ -84,6 +87,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TutorialController.prototype, "getUserData", null);
+__decorate([
+    (0, common_1.Get)('getAllUsers'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get all users' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return all users.' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getAllUsers", null);
 __decorate([
     (0, common_1.Post)('createCourse'),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new course' }),

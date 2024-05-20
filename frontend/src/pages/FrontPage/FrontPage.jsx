@@ -4,7 +4,7 @@ import CoursesList from "../../components/CoursesList/CoursesList";
 const FrontPage = () => {
   return (
     <div>
-      <CoursesList />
+      <CoursesList category="Frontend" />
     </div>
   );
 };

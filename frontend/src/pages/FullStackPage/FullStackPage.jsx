@@ -4,7 +4,7 @@ import CoursesList from "../../components/CoursesList/CoursesList";
 const FullStackPage = () => {
   return (
     <div>
-      <CoursesList />
+      <CoursesList category="Fullstack" />
     </div>
   );
 };

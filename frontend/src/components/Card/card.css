@@ -1,8 +1,7 @@
 .card_main-div {
-  /* margin: 30px; */
   padding: 5px;
   display: flex;
-  margin: 10px 0px;
+  margin: 20px 0px;
   flex-direction: column;
   width: 700px;
   background-color: white;

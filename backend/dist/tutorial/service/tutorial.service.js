@@ -13,6 +13,12 @@ const database_1 = require("firebase/database");
 const storage_1 = require("firebase/storage");
 const uuid_1 = require("uuid");
 let TutorialService = class TutorialService {
+    async getAllUsers() {
+        const usersRef = (0, database_1.ref)(firebase_config_1.database, 'users');
+        const snapshot = await (0, database_1.get)(usersRef);
+        const users = snapshot.val();
+        return Object.values(users || {});
+    }
     async createUserData(userId, createUserDto) {
         const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);
         await (0, database_1.set)(userRef, createUserDto);
