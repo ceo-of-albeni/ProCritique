@@ -2,24 +2,15 @@ import React, { useEffect } from "react";
 import classes from "./card.css";
 import { useNavigate } from "react-router-dom";
 import Rating from "@mui/material/Rating";
-import { useState, useContext } from "react";
-import { coursesContext } from "../../contexts/coursesContext";
 
-const Card = ({ item, photo }) => {
+const Card = ({ item }) => {
   const navigate = useNavigate();
-  const { getPhoto } = useContext(coursesContext);
-
-  let pho = item.course_name.toLowerCase();
-
-  useEffect(() => {
-    getPhoto(pho);
-  }, []);
 
   return (
     <div className="card_main-div">
       <h3>{item.course_name}</h3>
       <div className="card_imgcomm-div">
-        <img src={photo} alt="" />
+        <img src={item.url} alt="" />
         <div className="card_starcomm-div">
           <div className="card_ratings">
             <Rating

@@ -4,7 +4,7 @@ import CoursesList from "../../components/CoursesList/CoursesList";
 const UXUI = () => {
   return (
     <div>
-      <CoursesList />
+      <CoursesList category="uxui" />
     </div>
   );
 };

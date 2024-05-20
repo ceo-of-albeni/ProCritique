@@ -8,7 +8,7 @@ import CoursesList from "../../components/CoursesList/CoursesList";
 const AndroidPage = () => {
   return (
     <div>
-      <CoursesList />
+      <CoursesList category="Android-разработка" />
     </div>
   );
 };

@@ -4,7 +4,7 @@ import CoursesList from "../../components/CoursesList/CoursesList";
 const IOS = () => {
   return (
     <div>
-      <CoursesList />
+      <CoursesList category="ios" />
     </div>
   );
 };

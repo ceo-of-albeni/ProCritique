@@ -9,6 +9,7 @@ const INIT_STATE = {
   courses: [],
   oneCourse: [],
   photo: [],
+  coursesByCategory: [],
 };
 
 function reducer(state = INIT_STATE, action) {
@@ -19,6 +20,8 @@ function reducer(state = INIT_STATE, action) {
       return { ...state, oneCourse: action.payload };
     case "GET_PHOTO":
       return { ...state, photo: action.payload };
+    case "GET_COURSES_BY_CATEGORY":
+      return { ...state, coursesByCategory: action.payload };
     default:
       return state;
   }
@@ -39,6 +42,21 @@ const CoursesContextsProvider = ({ children }) => {
         type: "GET_COURSES",
         payload: res.data,
       });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getCoursesByCategory(name) {
+    try {
+      const res = await axios(
+        `http://localhost:3001/tutorial/getCoursesByCategory?category=${name}`
+      );
+      dispatch({
+        type: "GET_COURSES_BY_CATEGORY",
+        payload: res.data,
+      });
+      console.log(res);
     } catch (err) {
       console.log(err);
     }
@@ -88,11 +106,13 @@ const CoursesContextsProvider = ({ children }) => {
         courses: state.courses,
         oneCourse: state.oneCourse,
         photo: state.photo,
+        coursesByCategory: state.coursesByCategory,
 
         getAllCourses,
-        getAllCourses,
+        getOneCourse,
         fetchByParams,
         getPhoto,
+        getCoursesByCategory,
       }}>
       {children}
     </coursesContext.Provider>
