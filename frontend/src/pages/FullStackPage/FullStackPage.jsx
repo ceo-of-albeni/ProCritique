@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import CoursesList from "../../components/CoursesList/CoursesList";
 
 const FullStackPage = () => {
   return (
-    <div>FullStackPage</div>
-  )
-}
+    <div>
+      <CoursesList />
+    </div>
+  );
+};
 
-export default FullStackPage
+export default FullStackPage;

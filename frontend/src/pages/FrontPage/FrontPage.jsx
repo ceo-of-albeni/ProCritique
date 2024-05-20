@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import CoursesList from "../../components/CoursesList/CoursesList";
 
 const FrontPage = () => {
   return (
-    <div>FrontPage</div>
-  )
-}
+    <div>
+      <CoursesList />
+    </div>
+  );
+};
 
-export default FrontPage
+export default FrontPage;

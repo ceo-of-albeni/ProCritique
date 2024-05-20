@@ -1,33 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import classes from "./card.css";
 import { useNavigate } from "react-router-dom";
-import Rating from '@mui/material/Rating';
-import { useState } from "react";
+import Rating from "@mui/material/Rating";
+import { useState, useContext } from "react";
+import { coursesContext } from "../../contexts/coursesContext";
 
-const Card = () => {
+const Card = ({ item, photo }) => {
   const navigate = useNavigate();
-  const [value, setValue] = useState(2);
+  const { getPhoto } = useContext(coursesContext);
+
+  let pho = item.course_name.toLowerCase();
+
+  useEffect(() => {
+    getPhoto(pho);
+  }, []);
 
   return (
     <div className="card_main-div">
-      <h3>Автохимия Dr.Active Антидождь для стекол "ANTIRAIN"</h3>
+      <h3>{item.course_name}</h3>
       <div className="card_imgcomm-div">
-        <img src="https://i.pinimg.com/736x/b6/a6/d5/b6a6d50de7eb36065b98ebd254d46cd5.jpg" alt="" />
+        <img src={photo} alt="" />
         <div className="card_starcomm-div">
           <div className="card_ratings">
-            {/* <Rating
-              name="simple-controlled"
-              value={value}
-              onChange={(event, newValue) => {
-                setValue(newValue);
-              }}
-            /> */}
-            <Rating name="read-only" value={value} readOnly />
-            <p>Среднее: 5</p>
-            <a href="/">Читать все отзывы</a>
+            <Rating
+              name="read-only"
+              value={item.comments.comment2.rating}
+              readOnly
+            />
+            <p>Среднее: {item.common_rate}</p>
+            <a onClick={() => navigate(`/courses/${item.id}`)}>Перейти</a>
           </div>
           <div id="card_comment-div">
-            <p id="card_comment-p">Безопасней снотворного, эффект накопительный. Как я победила бессонницу дозой?</p>
+            <p id="card_comment-p">{item.short_description}</p>
           </div>
         </div>
       </div>

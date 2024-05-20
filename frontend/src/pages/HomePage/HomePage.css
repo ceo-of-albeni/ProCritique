@@ -1,0 +1,26 @@
+.home_main {
+  display: flex;
+  flex-direction: column;
+}
+
+.home_first-main {
+  display: flex;
+  align-items: center;
+  margin: 50px;
+  flex-direction: row-reverse;
+  justify-content: space-evenly;
+}
+
+.home_first-text {
+  width: 600px;
+}
+
+.home_first-text h1 {
+  font-size: 50px;
+  color: blueviolet;
+  margin-bottom: 30px;
+}
+
+.home_first-text p {
+  font-size: 20px;
+}

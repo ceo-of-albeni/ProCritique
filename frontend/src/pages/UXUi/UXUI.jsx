@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import CoursesList from "../../components/CoursesList/CoursesList";
 
 const UXUI = () => {
   return (
-    <div>UXUI</div>
-  )
-}
+    <div>
+      <CoursesList />
+    </div>
+  );
+};
 
-export default UXUI
+export default UXUI;
