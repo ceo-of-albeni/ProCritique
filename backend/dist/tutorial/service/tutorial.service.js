@@ -12,18 +12,40 @@ const firebase_config_1 = require("../../firebase.config");
 const database_1 = require("firebase/database");
 const storage_1 = require("firebase/storage");
 const uuid_1 = require("uuid");
+const firestore_1 = require("firebase/firestore");
 let TutorialService = class TutorialService {
+    async createUserData(createUserDto) {
+        const { email, password, username } = createUserDto;
+        try {
+            const userCredential = await (0, firebase_config_1.createUserWithEmailAndPassword)(firebase_config_1.auth, email, password);
+            const user = userCredential.user;
+            await (0, firestore_1.setDoc)((0, firestore_1.doc)(firebase_config_1.firestore, 'users', user.uid), {
+                email,
+                username,
+            });
+            return { id: user.uid };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Error creating user');
+        }
+    }
+    async loginUser(loginUserDto) {
+        const { email, password } = loginUserDto;
+        try {
+            const userCredential = await (0, firebase_config_1.signInWithEmailAndPassword)(firebase_config_1.auth, email, password);
+            const user = userCredential.user;
+            const idToken = await user.getIdToken();
+            return { idToken };
+        }
+        catch (error) {
+            throw new common_1.UnauthorizedException('Invalid credentials');
+        }
+    }
     async getAllUsers() {
         const usersRef = (0, database_1.ref)(firebase_config_1.database, 'users');
         const snapshot = await (0, database_1.get)(usersRef);
         const users = snapshot.val();
         return Object.values(users || {});
-    }
-    async createUserData(createUserDto) {
-        const userId = (0, uuid_1.v4)();
-        const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);
-        await (0, database_1.set)(userRef, { id: userId, ...createUserDto });
-        return { id: userId };
     }
     async getUserData(userId) {
         const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);

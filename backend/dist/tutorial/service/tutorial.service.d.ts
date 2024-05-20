@@ -2,11 +2,15 @@
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
+import { LoginUserDto } from 'src/dto/login-user.dto';
 export declare class TutorialService {
-    getAllUsers(): Promise<any[]>;
     createUserData(createUserDto: CreateUserDto): Promise<{
         id: string;
     }>;
+    loginUser(loginUserDto: LoginUserDto): Promise<{
+        idToken: string;
+    }>;
+    getAllUsers(): Promise<any[]>;
     getUserData(userId: string): Promise<any>;
     createCourseData(courseId: string, createCourseDto: CreateCourseDto): Promise<void>;
     addCommentToCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto): Promise<void>;
