@@ -19,9 +19,11 @@ let TutorialService = class TutorialService {
         const users = snapshot.val();
         return Object.values(users || {});
     }
-    async createUserData(userId, createUserDto) {
+    async createUserData(createUserDto) {
+        const userId = (0, uuid_1.v4)();
         const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);
-        await (0, database_1.set)(userRef, createUserDto);
+        await (0, database_1.set)(userRef, { id: userId, ...createUserDto });
+        return { id: userId };
     }
     async getUserData(userId) {
         const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);
@@ -48,6 +50,23 @@ let TutorialService = class TutorialService {
         }
         course.comments[commentId] = createCommentDto;
         await (0, database_1.update)(courseRef, { comments: course.comments });
+        await this.updateCourseRating(courseId);
+    }
+    async deleteCommentFromCourse(courseId, commentId) {
+        const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
+        const snapshot = await (0, database_1.get)(courseRef);
+        const course = snapshot.val();
+        if (!course) {
+            throw new common_1.NotFoundException('Course not found');
+        }
+        if (course.comments && course.comments[commentId]) {
+            delete course.comments[commentId];
+            await (0, database_1.update)(courseRef, { comments: course.comments });
+            await this.updateCourseRating(courseId);
+        }
+        else {
+            throw new common_1.NotFoundException('Comment not found');
+        }
     }
     async getCourseData(courseId) {
         const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
@@ -70,18 +89,6 @@ let TutorialService = class TutorialService {
         const courses = snapshot.val();
         return Object.values(courses || {});
     }
-    async getCoursesSortedByRating(order) {
-        const coursesRef = (0, database_1.ref)(firebase_config_1.database, 'courses');
-        const snapshot = await (0, database_1.get)(coursesRef);
-        const courses = snapshot.val();
-        const coursesArray = Object.values(courses || {});
-        coursesArray.sort((a, b) => {
-            const ratingA = this.calculateAverageRating(a.comments);
-            const ratingB = this.calculateAverageRating(b.comments);
-            return order === 'asc' ? ratingA - ratingB : ratingB - ratingA;
-        });
-        return coursesArray;
-    }
     async getTeachersAndMentors(courseId) {
         const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
         const snapshot = await (0, database_1.get)(courseRef);
@@ -93,11 +100,6 @@ let TutorialService = class TutorialService {
             teachers: course.teachers,
             mentors: course.mentors,
         };
-    }
-    calculateAverageRating(comments) {
-        const ratings = Object.values(comments || {}).map((comment) => comment.rating);
-        const sum = ratings.reduce((a, b) => a + b, 0);
-        return ratings.length ? sum / ratings.length : 0;
     }
     async uploadFile(file) {
         const fileRef = (0, storage_1.ref)(firebase_config_1.storage, `icons/${(0, uuid_1.v4)()}-${file.originalname}`);
@@ -115,6 +117,33 @@ let TutorialService = class TutorialService {
         catch (error) {
             throw new common_1.NotFoundException(`File ${fileName} not found`);
         }
+    }
+    async getCoursesSortedByRating(order) {
+        const coursesRef = (0, database_1.ref)(firebase_config_1.database, 'courses');
+        const snapshot = await (0, database_1.get)(coursesRef);
+        const courses = snapshot.val();
+        const coursesArray = Object.values(courses || {});
+        coursesArray.sort((a, b) => {
+            const ratingA = this.calculateAverageRating(a.comments);
+            const ratingB = this.calculateAverageRating(b.comments);
+            return order === 'asc' ? ratingA - ratingB : ratingB - ratingA;
+        });
+        return coursesArray;
+    }
+    async updateCourseRating(courseId) {
+        const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
+        const snapshot = await (0, database_1.get)(courseRef);
+        const course = snapshot.val();
+        if (course && course.comments) {
+            const ratings = Object.values(course.comments).map((comment) => comment.rating);
+            const averageRating = ratings.length ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : '0';
+            await (0, database_1.update)(courseRef, { common_rate: averageRating });
+        }
+    }
+    calculateAverageRating(comments) {
+        const ratings = Object.values(comments || {}).map((comment) => comment.rating);
+        const sum = ratings.reduce((a, b) => a + b, 0);
+        return ratings.length ? sum / ratings.length : 0;
     }
 };
 exports.TutorialService = TutorialService;

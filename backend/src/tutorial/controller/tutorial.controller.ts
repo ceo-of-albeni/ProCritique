@@ -16,9 +16,8 @@ export class TutorialController {
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'The user has been successfully created.' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  async createUserData(@Body() createUserDto: CreateUserDto): Promise<void> {
-    const userId = 'user' + Date.now(); 
-    await this.tutorialService.createUserData(userId, createUserDto);
+  async createUserData(@Body() createUserDto: CreateUserDto): Promise<{ id: string }> {
+    return await this.tutorialService.createUserData(createUserDto);
   }
 
   @Get('getUser/:userId')
@@ -55,6 +54,17 @@ export class TutorialController {
   ): Promise<void> {
     const commentId = 'comment' + Date.now();
     await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto);
+  }
+
+  @Post('deleteComment/:courseId/:commentId')
+  @ApiOperation({ summary: 'Delete a comment from a course' })
+  @ApiResponse({ status: 200, description: 'The comment has been successfully deleted.' })
+  @ApiResponse({ status: 404, description: 'Comment not found.' })
+  async deleteCommentFromCourse(
+    @Param('courseId') courseId: string,
+    @Param('commentId') commentId: string
+  ): Promise<void> {
+    await this.tutorialService.deleteCommentFromCourse(courseId, commentId);
   }
 
   @Get('getCourse/:courseId')
