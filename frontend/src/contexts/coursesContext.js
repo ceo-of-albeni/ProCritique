@@ -22,6 +22,8 @@ function reducer(state = INIT_STATE, action) {
       return { ...state, photo: action.payload };
     case "GET_COURSES_BY_CATEGORY":
       return { ...state, coursesByCategory: action.payload };
+    case "SEARCH_COURSES":
+      return { ...state, courses: action.payload };
     default:
       return state;
   }
@@ -41,6 +43,21 @@ const CoursesContextsProvider = ({ children }) => {
       dispatch({
         type: "GET_COURSES",
         payload: res.data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function searchCourses(query) {
+    try {
+      const res = await axios(`${API}/tutorial/getAllCourses`);
+      const filteredCourses = res.data.filter(course => 
+        course.course_name.toLowerCase().includes(query.toLowerCase())
+      );
+      dispatch({
+        type: "SEARCH_COURSES",
+        payload: filteredCourses,
       });
     } catch (err) {
       console.log(err);
@@ -113,6 +130,7 @@ const CoursesContextsProvider = ({ children }) => {
         fetchByParams,
         getPhoto,
         getCoursesByCategory,
+        searchCourses,
       }}>
       {children}
     </coursesContext.Provider>

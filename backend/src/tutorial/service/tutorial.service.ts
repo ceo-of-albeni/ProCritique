@@ -2,15 +2,16 @@ import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/co
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
-import { database, firestore, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage } from 'src/firebase.config';
+import { firestore, auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, storage, database } from 'src/firebase.config';
 import { ref as dbRef, get, set, update, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL, getMetadata } from 'firebase/storage';
 import { LoginUserDto } from 'src/dto/login-user.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, query as firestoreQuery, where, getDocs } from 'firebase/firestore';
 
 @Injectable()
 export class TutorialService {
+  // Firestore methods
   async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
     const { email, password, username } = createUserDto;
 
@@ -18,18 +19,27 @@ export class TutorialService {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      await setDoc(doc(firestore, 'users', user.uid), {
+      const userId = user.uid;
+
+      await setDoc(doc(firestore, 'users', userId), {
+        id: userId,
         email,
         username,
       });
 
-      return { id: user.uid };
+      await set(dbRef(database, 'users/' + userId), {
+        id: userId,
+        email,
+        username,
+      });
+
+      return { id: userId };
     } catch (error) {
       throw new UnauthorizedException('Error creating user');
     }
   }
 
-  async loginUser(loginUserDto: LoginUserDto): Promise<{ idToken: string }> {
+  async loginUser(loginUserDto: LoginUserDto): Promise<{ idToken: string; email: string; username: string }> {
     const { email, password } = loginUserDto;
 
     try {
@@ -37,30 +47,35 @@ export class TutorialService {
       const user = userCredential.user;
 
       const idToken = await user.getIdToken();
+      const userDoc = await getDoc(doc(firestore, 'users', user.uid));
+      const userData = userDoc.data();
 
-      return { idToken };
+      if (!userData) {
+        throw new NotFoundException('User not found in Firestore');
+      }
+
+      return { idToken, email: user.email, username: userData.username };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
 
   async getAllUsers(): Promise<any[]> {
-    const usersRef = dbRef(database, 'users');
-    const snapshot = await get(usersRef);
-    const users = snapshot.val();
-    return Object.values(users || {});
+    const usersCollection = collection(firestore, 'users');
+    const userDocs = await getDocs(usersCollection);
+    return userDocs.docs.map(doc => doc.data());
   }
 
   async getUserData(userId: string): Promise<any> {
-    const userRef = dbRef(database, 'users/' + userId);
-    const snapshot = await get(userRef);
-    const userData = snapshot.val();
+    const userDoc = await getDoc(doc(firestore, 'users', userId));
+    const userData = userDoc.data();
     if (!userData) {
       throw new NotFoundException('User not found');
     }
     return userData;
   }
 
+  // Realtime Database methods for courses
   async createCourseData(courseId: string, createCourseDto: CreateCourseDto): Promise<void> {
     const courseRef = dbRef(database, 'courses/' + courseId);
     await set(courseRef, createCourseDto);

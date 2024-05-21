@@ -9,6 +9,8 @@ export declare class TutorialService {
     }>;
     loginUser(loginUserDto: LoginUserDto): Promise<{
         idToken: string;
+        email: string;
+        username: string;
     }>;
     getAllUsers(): Promise<any[]>;
     getUserData(userId: string): Promise<any>;

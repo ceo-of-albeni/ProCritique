@@ -19,11 +19,18 @@ let TutorialService = class TutorialService {
         try {
             const userCredential = await (0, firebase_config_1.createUserWithEmailAndPassword)(firebase_config_1.auth, email, password);
             const user = userCredential.user;
-            await (0, firestore_1.setDoc)((0, firestore_1.doc)(firebase_config_1.firestore, 'users', user.uid), {
+            const userId = user.uid;
+            await (0, firestore_1.setDoc)((0, firestore_1.doc)(firebase_config_1.firestore, 'users', userId), {
+                id: userId,
                 email,
                 username,
             });
-            return { id: user.uid };
+            await (0, database_1.set)((0, database_1.ref)(firebase_config_1.database, 'users/' + userId), {
+                id: userId,
+                email,
+                username,
+            });
+            return { id: userId };
         }
         catch (error) {
             throw new common_1.UnauthorizedException('Error creating user');
@@ -35,22 +42,25 @@ let TutorialService = class TutorialService {
             const userCredential = await (0, firebase_config_1.signInWithEmailAndPassword)(firebase_config_1.auth, email, password);
             const user = userCredential.user;
             const idToken = await user.getIdToken();
-            return { idToken };
+            const userDoc = await (0, firestore_1.getDoc)((0, firestore_1.doc)(firebase_config_1.firestore, 'users', user.uid));
+            const userData = userDoc.data();
+            if (!userData) {
+                throw new common_1.NotFoundException('User not found in Firestore');
+            }
+            return { idToken, email: user.email, username: userData.username };
         }
         catch (error) {
             throw new common_1.UnauthorizedException('Invalid credentials');
         }
     }
     async getAllUsers() {
-        const usersRef = (0, database_1.ref)(firebase_config_1.database, 'users');
-        const snapshot = await (0, database_1.get)(usersRef);
-        const users = snapshot.val();
-        return Object.values(users || {});
+        const usersCollection = (0, firestore_1.collection)(firebase_config_1.firestore, 'users');
+        const userDocs = await (0, firestore_1.getDocs)(usersCollection);
+        return userDocs.docs.map(doc => doc.data());
     }
     async getUserData(userId) {
-        const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);
-        const snapshot = await (0, database_1.get)(userRef);
-        const userData = snapshot.val();
+        const userDoc = await (0, firestore_1.getDoc)((0, firestore_1.doc)(firebase_config_1.firestore, 'users', userId));
+        const userData = userDoc.data();
         if (!userData) {
             throw new common_1.NotFoundException('User not found');
         }

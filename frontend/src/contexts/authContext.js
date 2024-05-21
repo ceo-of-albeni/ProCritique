@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from "react";
+import React, { useState, useReducer, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -20,7 +20,7 @@ function reducer(state = INIT_STATE, action) {
   }
 }
 
-const API = "http://localhost:3001/api/";
+const API = "http://localhost:3001/tutorial/";
 
 const AuthContextProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -30,119 +30,72 @@ const AuthContextProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
-  async function getUsers() {
+  useEffect(() => {
+    const email = localStorage.getItem("email");
+    const username = localStorage.getItem("username");
+    if (email && username) {
+      setCurrentUser({ email, username });
+    }
+  }, []);
+
+  async function handleRegister(newObj) {
     try {
-      const res = await axios(`${API}/user`);
+      const res = await axios.post(`${API}createUser`, newObj);
+      console.log('User created:', res.data);
+    } catch (err) {
+      setError(true);
+      console.error('Error creating user:', err);
+    }
+  }
+
+  async function handleLogin(formData) {
+    try {
+      const res = await axios.post(`${API}login`, formData);
+      const { idToken, email, username } = res.data;
+
+      setCurrentUser({ email, username });
+      localStorage.setItem("idToken", idToken);
+      localStorage.setItem("email", email);
+      localStorage.setItem("username", username);
+      setError(false);
+    } catch (err) {
+      setError(true);
+      console.error('Error logging in user:', err);
+      alert("Invalid email or password!");
+    }
+  }
+
+  async function getAllUsers() {
+    try {
+      const res = await axios.get(`${API}getAllUsers`);
       dispatch({
         type: "GET_USERS",
         payload: res.data,
       });
     } catch (err) {
-      console.log(err);
+      console.error('Error fetching users:', err);
     }
   }
 
-  async function getOneUser() {
+  async function getOneUser(userId) {
     try {
-      const tokens = JSON.parse(localStorage.getItem("tokens"));
-      const Authorization = `Bearer ${tokens.access_token}`;
-      const config = {
-        headers: {
-          Authorization,
-        },
-      };
-      const res = await axios(`${API}/user/get/profile`, config);
+      const res = await axios.get(`${API}getUser/${userId}`);
       dispatch({
         type: "GET_ONE_USER",
         payload: res.data,
       });
     } catch (err) {
-      console.log(err);
-    }
-  }
-
-  async function handleRegister(newObj) {
-    try {
-      const res = await axios.post(
-        `http://localhost:3001/tutorial/createUser`,
-        newObj
-      );
-      console.log("ye");
-    } catch (err) {
-      console.log(err);
-      setError(err);
-    }
-  }
-
-  async function handleLogin(formData, email, closeModal) {
-    try {
-      const res = await axios.post(`${API}/auth/login`, formData);
-      setCurrentUser(res);
-      localStorage.setItem("tokens", JSON.stringify(res.data));
-      localStorage.setItem("email", email);
-
-      closeModal();
-
-      navigate("/");
-      window.location.reload();
-    } catch (err) {
-      console.log(err);
-      setError(err);
-      alert("You entered wrong password or email!");
-    } finally {
-    }
-  }
-
-  async function handleConfirm(formData) {
-    try {
-      const res = await axios.post(`${API}/auth/confirmEmail`, formData);
-      navigate("/");
-    } catch (err) {
-      console.log(err);
-      setError(err);
-    }
-  }
-
-  async function sendCodeAgain(formData) {
-    try {
-      const res = await axios.patch(`${API}/auth/sendCodeAgain`, formData);
-      navigate("/");
-    } catch (err) {
-      console.log(err);
-      setError(err);
-    }
-  }
-
-  async function forgotPassword(email) {
-    try {
-      const res = await axios.post(`${API}/auth/forgotPassword`, email);
-    } catch (err) {
-      console.log(err);
-      setError(err);
-    } finally {
-    }
-  }
-
-  async function handleUser(newProduct, navigate) {
-    try {
-      const tokens = JSON.parse(localStorage.getItem("tokens"));
-      const Authorization = `Bearer ${tokens.access_token}`;
-      const config = {
-        headers: {
-          Authorization,
-        },
-      };
-      const res = await axios.post(`${API}/user-profile/`, newProduct, config);
-    } catch (err) {
-      console.log(err);
+      console.error('Error fetching user:', err);
     }
   }
 
   function handleLogout() {
-    localStorage.removeItem("tokens");
+    localStorage.removeItem("idToken");
     localStorage.removeItem("email");
-    setCurrentUser(false);
+    localStorage.removeItem("username");
+    setCurrentUser(null);
     navigate("/");
+    window.location.reload();
   }
 
   return (
@@ -150,19 +103,14 @@ const AuthContextProvider = ({ children }) => {
       value={{
         currentUser,
         error,
+        handleRegister,
+        handleLogin,
+        handleLogout,
+        getAllUsers,
+        getOneUser,
         users: state.users,
         oneUser: state.oneUser,
-
-        handleRegister,
-        handleConfirm,
         setError,
-        handleLogin,
-        getOneUser,
-        getUsers,
-        handleLogout,
-        handleUser,
-        sendCodeAgain,
-        forgotPassword,
       }}>
       {children}
     </authContext.Provider>
