@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import classes from "./card.css";
 import { useNavigate } from "react-router-dom";
 import Rating from "@mui/material/Rating";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 const Card = ({ item }) => {
   const navigate = useNavigate();
@@ -19,7 +20,12 @@ const Card = ({ item }) => {
               readOnly
             />
             <p>Среднее: {item.common_rate}</p>
-            <a onClick={() => navigate(`/courses/${item.id}`)}>Перейти</a>
+            <div
+              onClick={() => navigate(`/courses/${item.id}`)}
+              className="card_pereiti">
+              <span>Перейти</span>
+              <ArrowForwardIosIcon />
+            </div>
           </div>
           <div id="card_comment-div">
             <p id="card_comment-p">{item.short_description}</p>

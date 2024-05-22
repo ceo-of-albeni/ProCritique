@@ -52,7 +52,7 @@ const CoursesContextsProvider = ({ children }) => {
   async function searchCourses(query) {
     try {
       const res = await axios(`${API}/tutorial/getAllCourses`);
-      const filteredCourses = res.data.filter(course => 
+      const filteredCourses = res.data.filter((course) =>
         course.course_name.toLowerCase().includes(query.toLowerCase())
       );
       dispatch({

@@ -5,16 +5,9 @@ import Card from "../Card/Card";
 import Pagination from "@mui/material/Pagination";
 import "./courseslist.css";
 
-
 const CoursesList = ({ category }) => {
-  const {
-    getAllCourses,
-    courses,
-    getPhoto,
-    photo,
-    coursesByCategory,
-    getCoursesByCategory,
-  } = useContext(coursesContext);
+  const { getPhoto, photo, coursesByCategory, getCoursesByCategory } =
+    useContext(coursesContext);
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
 
