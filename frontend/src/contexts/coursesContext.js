@@ -52,7 +52,7 @@ const CoursesContextsProvider = ({ children }) => {
   async function searchCourses(query) {
     try {
       const res = await axios(`${API}/tutorial/getAllCourses`);
-      const filteredCourses = res.data.filter(course => 
+      const filteredCourses = res.data.filter((course) =>
         course.course_name.toLowerCase().includes(query.toLowerCase())
       );
       dispatch({
@@ -117,6 +117,15 @@ const CoursesContextsProvider = ({ children }) => {
     navigate(url);
   };
 
+  const addCommentToCourse = async (courseId, newComment) => {
+    try {
+      await axios.post(`${API}/tutorial/addComment/${courseId}`, newComment);
+      getOneCourse(courseId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <coursesContext.Provider
       value={{
@@ -131,6 +140,7 @@ const CoursesContextsProvider = ({ children }) => {
         getPhoto,
         getCoursesByCategory,
         searchCourses,
+        addCommentToCourse,
       }}>
       {children}
     </coursesContext.Provider>

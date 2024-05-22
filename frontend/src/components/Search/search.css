@@ -1,0 +1,11 @@
+.search_input .MuiInputBase-input {
+  color: white;
+}
+
+.search_input .MuiInputLabel-root {
+  color: rgba(204, 204, 204, 0.601);
+}
+
+.search_input .MuiOutlinedInput-notchedOutline {
+  border: none;
+}

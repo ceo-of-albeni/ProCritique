@@ -52,3 +52,15 @@
   margin-right: 140px;
   margin-left: 20px;
 }
+
+.card_pereiti {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.card_pereiti:hover {
+  text-decoration: underline;
+  color: grey;
+  cursor: pointer;
+}

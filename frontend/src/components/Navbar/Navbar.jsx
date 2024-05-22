@@ -1,18 +1,20 @@
 import React, { useState, useContext, useEffect } from "react";
-import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import InputBase from '@mui/material/InputBase';
+import SearchIcon from "@mui/icons-material/Search";
+import IconButton from "@mui/material/IconButton";
+import InputBase from "@mui/material/InputBase";
 import "./Navbar.css";
 import { useNavigate } from "react-router-dom";
 import { authContext } from "../../contexts/authContext";
 import { coursesContext } from "../../contexts/coursesContext";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Search from "../Search/Search";
 
 const Navbar = () => {
   const [activeModal, setActiveModal] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { handleLogin, handleLogout, currentUser, setError } = useContext(authContext);
+  const { handleLogin, handleLogout, currentUser, setError } =
+    useContext(authContext);
   const { searchCourses } = useContext(coursesContext);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
@@ -39,13 +41,13 @@ const Navbar = () => {
     };
 
     try {
-      console.log('Sending login request:', newObj);
+      console.log("Sending login request:", newObj);
       await handleLogin(newObj);
       alert("Login successful!");
       closeModal();
       navigate("/");
     } catch (error) {
-      console.log('Login error:', error);
+      console.log("Login error:", error);
       alert("Invalid email or password");
     }
 
@@ -76,7 +78,7 @@ const Navbar = () => {
   }, [setError]);
 
   useEffect(() => {
-    console.log('Current User:', currentUser);
+    console.log("Current User:", currentUser);
   }, [currentUser]);
 
   return (
@@ -103,7 +105,9 @@ const Navbar = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <button type="button" onClick={loginUser}>Sign In</button>
+              <button type="button" onClick={loginUser}>
+                Sign In
+              </button>
               <div className="login__signup" onClick={openReg}>
                 <a href="javascript:void(0);" className="sign">
                   Sign Up
@@ -116,18 +120,29 @@ const Navbar = () => {
 
       <div className="header_navbar" style={{ backgroundColor: "#6A5ACD" }}>
         <div className="container_header">
-          <p className="logo_p" onClick={() => navigate("/")}>ProCritique</p>
+          <p className="logo_p" onClick={() => navigate("/")}>
+            ProCritique
+          </p>
           <div className="header_inner">
-            <InputBase
+            {/* <InputBase
               sx={{ ml: 1, flex: 1 }}
               style={{ color: "white" }}
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+            /> */}
+            <Search
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
+            <IconButton
+              type="button"
+              sx={{ p: "10px" }}
+              aria-label="search"
+              onClick={handleSearch}>
               <SearchIcon style={{ color: "white" }} />
             </IconButton>
+
             {currentUser ? (
               <>
                 <div className="user_name">{currentUser.username}</div>

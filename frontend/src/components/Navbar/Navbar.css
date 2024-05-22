@@ -20,6 +20,7 @@
   color: white;
   font-size: 16px;
   margin-right: 20px;
+  /* margin-left: 20px; */
 }
 
 .login_btn {
@@ -44,6 +45,10 @@
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+}
+
+.logo_p:hover {
+  cursor: pointer;
 }
 
 .header_search {
@@ -204,7 +209,7 @@
 
 .comment_form button {
   padding: 10px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   border: none;
   border-radius: 5px;
