@@ -5,6 +5,7 @@ import Card from "../Card/Card";
 import Pagination from "@mui/material/Pagination";
 import "./courseslist.css";
 
+
 const CoursesList = ({ category }) => {
   const {
     getAllCourses,
