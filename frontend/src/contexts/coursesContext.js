@@ -126,6 +126,24 @@ const CoursesContextsProvider = ({ children }) => {
     }
   };
 
+  const deleteCommentFromCourse = async (courseId, commentId) => {
+    try {
+      await axios.post(`${API}/tutorial/deleteComment/${courseId}/${commentId}`);
+      getOneCourse(courseId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const updateComment = async (courseId, commentId, updatedComment) => {
+    try {
+      await axios.post(`${API}/tutorial/updateComment/${courseId}/${commentId}`, updatedComment);
+      getOneCourse(courseId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <coursesContext.Provider
       value={{
@@ -141,6 +159,8 @@ const CoursesContextsProvider = ({ children }) => {
         getCoursesByCategory,
         searchCourses,
         addCommentToCourse,
+        deleteCommentFromCourse,
+        updateComment,
       }}>
       {children}
     </coursesContext.Provider>
