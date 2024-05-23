@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnauthorizedException, InternalServerErrorException} from '@nestjs/common';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
@@ -11,7 +11,7 @@ import { collection, doc, setDoc, getDoc, query as firestoreQuery, where, getDoc
 
 @Injectable()
 export class TutorialService {
-  // Firestore methods
+
   async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
     const { email, password, username } = createUserDto;
 
@@ -39,27 +39,27 @@ export class TutorialService {
     }
   }
 
-  async loginUser(loginUserDto: LoginUserDto): Promise<{ idToken: string; email: string; username: string }> {
+  async loginUser(loginUserDto: LoginUserDto): Promise<{ idToken: string; email: string; username: string; userId: string }> {
     const { email, password } = loginUserDto;
-
+  
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       const idToken = await user.getIdToken();
       const userDoc = await getDoc(doc(firestore, 'users', user.uid));
       const userData = userDoc.data();
-
+  
       if (!userData) {
         throw new NotFoundException('User not found in Firestore');
       }
-
-      return { idToken, email: user.email, username: userData.username };
+  
+      return { idToken, email: user.email, username: userData.username, userId: user.uid };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
-
+  
   async getAllUsers(): Promise<any[]> {
     const usersCollection = collection(firestore, 'users');
     const userDocs = await getDocs(usersCollection);
@@ -75,41 +75,98 @@ export class TutorialService {
     return userData;
   }
 
-  // Realtime Database methods for courses
   async createCourseData(courseId: string, createCourseDto: CreateCourseDto): Promise<void> {
     const courseRef = dbRef(database, 'courses/' + courseId);
     await set(courseRef, createCourseDto);
   }
 
-  async addCommentToCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto): Promise<void> {
+  async addCommentToCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto, userId: string): Promise<void> {
+    try {
+      console.log('Adding comment to course:', { courseId, commentId, createCommentDto, userId });
+  
+      const userRef = dbRef(database, 'users/' + userId);
+      const userSnapshot = await get(userRef);
+      const userData = userSnapshot.val();
+      
+      if (!userData) {
+        throw new NotFoundException('User not found in Realtime Database');
+      }
+      
+      const courseRef = dbRef(database, 'courses/' + courseId);
+      const snapshot = await get(courseRef);
+      const course = snapshot.val();
+      
+      if (!course) {
+        throw new NotFoundException('Course not found');
+      }
+      
+      if (!course.comments) {
+        course.comments = {};
+      }
+      
+      course.comments[commentId] = {
+        ...createCommentDto,
+        userId: userData.id,
+        username: userData.username
+      };
+      
+      await update(courseRef, { comments: course.comments });
+      await this.updateCourseRating(courseId);
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw new InternalServerErrorException('Failed to add comment');
+    }
+  }
+
+  async deleteCommentFromCourse(courseId: string, commentId: string, userId: string): Promise<void> {
     const courseRef = dbRef(database, 'courses/' + courseId);
     const snapshot = await get(courseRef);
     const course = snapshot.val();
+  
     if (!course) {
       throw new NotFoundException('Course not found');
     }
-    if (!course.comments) {
-      course.comments = {};
+  
+    const comment = course.comments[commentId];
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
     }
-    course.comments[commentId] = createCommentDto;
+  
+    if (comment.userId !== userId) {
+      throw new UnauthorizedException('You are not authorized to delete this comment');
+    }
+  
+    delete course.comments[commentId];
     await update(courseRef, { comments: course.comments });
     await this.updateCourseRating(courseId);
   }
-
-  async deleteCommentFromCourse(courseId: string, commentId: string): Promise<void> {
+  
+  async updateCommentInCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto, userId: string): Promise<void> {
     const courseRef = dbRef(database, 'courses/' + courseId);
     const snapshot = await get(courseRef);
     const course = snapshot.val();
+  
     if (!course) {
       throw new NotFoundException('Course not found');
     }
-    if (course.comments && course.comments[commentId]) {
-      delete course.comments[commentId];
-      await update(courseRef, { comments: course.comments });
-      await this.updateCourseRating(courseId);
-    } else {
+  
+    const comment = course.comments[commentId];
+    if (!comment) {
       throw new NotFoundException('Comment not found');
     }
+  
+    if (comment.userId !== userId) {
+      throw new UnauthorizedException('You are not authorized to update this comment');
+    }
+  
+    course.comments[commentId] = {
+      ...createCommentDto,
+      userId,
+      username: comment.username,
+    };
+  
+    await update(courseRef, { comments: course.comments });
+    await this.updateCourseRating(courseId);
   }
 
   async getCourseData(courseId: string): Promise<any> {

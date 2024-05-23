@@ -117,32 +117,37 @@ const CoursesContextsProvider = ({ children }) => {
     navigate(url);
   };
 
-  const addCommentToCourse = async (courseId, newComment) => {
-    try {
-      await axios.post(`${API}/tutorial/addComment/${courseId}`, newComment);
-      getOneCourse(courseId);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  async function addCommentToCourse(courseId, comment) { 
+    try { 
+      const userId = localStorage.getItem("userId");  
+      const res = await axios.post(`http://localhost:3001/tutorial/addComment/${courseId}`, { 
+        ...comment, 
+        userId: userId  
+      }); 
+      getOneCourse(courseId); 
+    } catch (err) { 
+      console.error('Error adding comment:', err); 
+    } 
+  }
 
-  const deleteCommentFromCourse = async (courseId, commentId) => {
-    try {
-      await axios.post(`${API}/tutorial/deleteComment/${courseId}/${commentId}`);
-      getOneCourse(courseId);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
-  const updateComment = async (courseId, commentId, updatedComment) => {
+  async function deleteCommentFromCourse(courseId, commentId, userId) {
     try {
-      await axios.post(`${API}/tutorial/updateComment/${courseId}/${commentId}`, updatedComment);
-      getOneCourse(courseId);
+      await axios.post(`${API}/tutorial/deleteComment/${courseId}/${commentId}`, { userId });
     } catch (err) {
-      console.log(err);
+      console.error('Error deleting comment:', err);
+      throw err;
     }
-  };
+  }
+  
+  async function updateCommentInCourse(courseId, commentId, updatedComment, userId) {
+    try {
+      await axios.post(`${API}/tutorial/updateComment/${courseId}/${commentId}`, { ...updatedComment, userId });
+    } catch (err) {
+      console.error('Error updating comment:', err);
+      throw err;
+    }
+  }
 
   return (
     <coursesContext.Provider
@@ -160,7 +165,7 @@ const CoursesContextsProvider = ({ children }) => {
         searchCourses,
         addCommentToCourse,
         deleteCommentFromCourse,
-        updateComment,
+        updateCommentInCourse,
       }}>
       {children}
     </coursesContext.Provider>

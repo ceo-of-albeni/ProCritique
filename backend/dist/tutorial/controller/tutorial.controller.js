@@ -41,12 +41,19 @@ let TutorialController = class TutorialController {
         const courseId = 'course' + Date.now();
         await this.tutorialService.createCourseData(courseId, createCourseDto);
     }
-    async addCommentToCourse(courseId, createCommentDto) {
+    async addCommentToCourse(courseId, createCommentDto, userId) {
+        console.log('Received userId:', userId);
         const commentId = 'comment' + Date.now();
-        await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto);
+        if (!userId) {
+            throw new common_1.BadRequestException('User ID is missing');
+        }
+        await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto, userId);
     }
-    async deleteCommentFromCourse(courseId, commentId) {
-        await this.tutorialService.deleteCommentFromCourse(courseId, commentId);
+    async deleteCommentFromCourse(courseId, commentId, userId) {
+        await this.tutorialService.deleteCommentFromCourse(courseId, commentId, userId);
+    }
+    async updateCommentInCourse(courseId, commentId, createCommentDto, userId) {
+        await this.tutorialService.updateCommentInCourse(courseId, commentId, createCommentDto, userId);
     }
     async getCourseData(courseId) {
         return await this.tutorialService.getCourseData(courseId);
@@ -131,21 +138,36 @@ __decorate([
     (0, swagger_1.ApiResponse)({ status: 403, description: 'Forbidden.' }),
     __param(0, (0, common_1.Param)('courseId')),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Body)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, create_comment_dto_1.CreateCommentDto]),
+    __metadata("design:paramtypes", [String, create_comment_dto_1.CreateCommentDto, String]),
     __metadata("design:returntype", Promise)
 ], TutorialController.prototype, "addCommentToCourse", null);
 __decorate([
     (0, common_1.Post)('deleteComment/:courseId/:commentId'),
     (0, swagger_1.ApiOperation)({ summary: 'Delete a comment from a course' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'The comment has been successfully deleted.' }),
-    (0, swagger_1.ApiResponse)({ status: 404, description: 'Comment not found.' }),
+    (0, swagger_1.ApiResponse)({ status: 403, description: 'Forbidden.' }),
     __param(0, (0, common_1.Param)('courseId')),
     __param(1, (0, common_1.Param)('commentId')),
+    __param(2, (0, common_1.Body)('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], TutorialController.prototype, "deleteCommentFromCourse", null);
+__decorate([
+    (0, common_1.Post)('updateComment/:courseId/:commentId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Update a comment in a course' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'The comment has been successfully updated.' }),
+    (0, swagger_1.ApiResponse)({ status: 403, description: 'Forbidden.' }),
+    __param(0, (0, common_1.Param)('courseId')),
+    __param(1, (0, common_1.Param)('commentId')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.Body)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, create_comment_dto_1.CreateCommentDto, String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "updateCommentInCourse", null);
 __decorate([
     (0, common_1.Get)('getCourse/:courseId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get course data by ID' }),

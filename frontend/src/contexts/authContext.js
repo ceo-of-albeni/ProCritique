@@ -33,8 +33,9 @@ const AuthContextProvider = ({ children }) => {
   useEffect(() => {
     const email = localStorage.getItem("email");
     const username = localStorage.getItem("username");
-    if (email && username) {
-      setCurrentUser({ email, username });
+    const userId = localStorage.getItem("userId");
+    if (email && username && userId) {
+      setCurrentUser({ id: userId, email, username });
     }
   }, []);
 
@@ -51,12 +52,15 @@ const AuthContextProvider = ({ children }) => {
   async function handleLogin(formData) {
     try {
       const res = await axios.post(`${API}login`, formData);
-      const { idToken, email, username } = res.data;
+      const { idToken, email, username, userId } = res.data;
 
-      setCurrentUser({ email, username });
+      console.log('Login response:', res.data);
+
+      setCurrentUser({ id: userId, email, username });
       localStorage.setItem("idToken", idToken);
       localStorage.setItem("email", email);
       localStorage.setItem("username", username);
+      localStorage.setItem("userId", userId);
       setError(false);
     } catch (err) {
       setError(true);
@@ -65,34 +69,11 @@ const AuthContextProvider = ({ children }) => {
     }
   }
 
-  async function getAllUsers() {
-    try {
-      const res = await axios.get(`${API}getAllUsers`);
-      dispatch({
-        type: "GET_USERS",
-        payload: res.data,
-      });
-    } catch (err) {
-      console.error('Error fetching users:', err);
-    }
-  }
-
-  async function getOneUser(userId) {
-    try {
-      const res = await axios.get(`${API}getUser/${userId}`);
-      dispatch({
-        type: "GET_ONE_USER",
-        payload: res.data,
-      });
-    } catch (err) {
-      console.error('Error fetching user:', err);
-    }
-  }
-
   function handleLogout() {
     localStorage.removeItem("idToken");
     localStorage.removeItem("email");
     localStorage.removeItem("username");
+    localStorage.removeItem("userId");
     setCurrentUser(null);
     navigate("/");
     window.location.reload();
@@ -106,10 +87,6 @@ const AuthContextProvider = ({ children }) => {
         handleRegister,
         handleLogin,
         handleLogout,
-        getAllUsers,
-        getOneUser,
-        users: state.users,
-        oneUser: state.oneUser,
         setError,
       }}>
       {children}

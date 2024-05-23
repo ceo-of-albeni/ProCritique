@@ -11,12 +11,14 @@ export declare class TutorialService {
         idToken: string;
         email: string;
         username: string;
+        userId: string;
     }>;
     getAllUsers(): Promise<any[]>;
     getUserData(userId: string): Promise<any>;
     createCourseData(courseId: string, createCourseDto: CreateCourseDto): Promise<void>;
-    addCommentToCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto): Promise<void>;
-    deleteCommentFromCourse(courseId: string, commentId: string): Promise<void>;
+    addCommentToCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto, userId: string): Promise<void>;
+    deleteCommentFromCourse(courseId: string, commentId: string, userId: string): Promise<void>;
+    updateCommentInCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto, userId: string): Promise<void>;
     getCourseData(courseId: string): Promise<any>;
     getCoursesByCategory(category: string): Promise<any[]>;
     getAllCourses(): Promise<any[]>;

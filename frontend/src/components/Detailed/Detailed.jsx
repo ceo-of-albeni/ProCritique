@@ -1,17 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { coursesContext } from "../../contexts/coursesContext";
-import { authContext } from "../../contexts/authContext"; // Подключите контекст авторизации
+import { authContext } from "../../contexts/authContext";
 import Rating from "@mui/material/Rating";
-import Stack from "@mui/material/Stack";
+import IconButton from '@mui/material/IconButton'; // Добавлено
+import EditIcon from '@mui/icons-material/Edit'; // Добавлено
+import DeleteIcon from '@mui/icons-material/Delete'; // Добавлено
 import "./detailed.css";
 
 const Detailed = () => {
-  const { getOneCourse, oneCourse, addCommentToCourse } = useContext(coursesContext);
-  const { currentUser } = useContext(authContext); // Подключите текущего пользователя из контекста авторизации
+  const { getOneCourse, oneCourse, addCommentToCourse, deleteCommentFromCourse, updateCommentInCourse } = useContext(coursesContext);
+  const { currentUser } = useContext(authContext);
   const [value, setValue] = useState(0);
   const [comment, setComment] = useState('');
-  const [rating, setRating] = useState(0); // Рейтинг для нового комментария
+  const [rating, setRating] = useState(0);
+  const [editingComment, setEditingComment] = useState(null);
 
   const { id } = useParams();
 
@@ -28,16 +31,60 @@ const Detailed = () => {
   const handleAddComment = async () => {
     if (currentUser && comment) {
       const newComment = {
+        userId: currentUser.id,
         username: currentUser.username,
         review: comment,
         rating: rating,
       };
-      await addCommentToCourse(id, newComment);
-      setComment('');
-      setRating(0);
-      getOneCourse(id); // Обновите курс после добавления комментария
+      try {
+        await addCommentToCourse(id, newComment); 
+        setComment('');
+        setRating(0);
+        getOneCourse(id);
+      } catch (error) {
+        console.error('Error adding comment:', error);
+      }
     } else {
       alert("Please log in to leave a comment.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (currentUser) {
+      try {
+        await deleteCommentFromCourse(id, commentId, currentUser.id);
+        getOneCourse(id);
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    } else {
+      alert("Please log in to delete a comment.");
+    }
+  };
+
+  const handleEditComment = (commentId, review, rating) => {
+    setEditingComment(commentId);
+    setComment(review);
+    setRating(rating);
+  };
+
+  const handleUpdateComment = async () => {
+    if (currentUser && editingComment) {
+      const updatedComment = {
+        review: comment,
+        rating: rating,
+      };
+      try {
+        await updateCommentInCourse(id, editingComment, updatedComment, currentUser.id);
+        setEditingComment(null);
+        setComment('');
+        setRating(0);
+        getOneCourse(id);
+      } catch (error) {
+        console.error('Error updating comment:', error);
+      }
+    } else {
+      alert("Please log in to update a comment.");
     }
   };
 
@@ -105,18 +152,34 @@ const Detailed = () => {
           {oneCourse.comments && (
             <div className="detailed_comments">
               <h3>Comments:</h3>
-              {Object.values(oneCourse.comments).map((comment, index) => (
+              {Object.entries(oneCourse.comments).map(([commentId, comment], index) => (
                 <div key={index} className="comment_card">
                   <p><strong>{comment.username}</strong>:</p>
                   <Rating value={comment.rating} readOnly />
                   <p>{comment.review}</p>
+                  {currentUser && currentUser.id === comment.userId && (
+                    <div className="comment_actions">
+                      <IconButton
+                        aria-label="edit"
+                        onClick={() => handleEditComment(commentId, comment.review, comment.rating)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => handleDeleteComment(commentId)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
           {currentUser && (
             <div className="add_comment">
-              <h3>Leave a Comment:</h3>
+              <h3>{editingComment ? "Edit Your Comment" : "Leave a Comment"}:</h3>
               <Rating
                 name="user-rating"
                 value={rating}
@@ -129,7 +192,9 @@ const Detailed = () => {
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Write your comment here"
               />
-              <button onClick={handleAddComment}>Submit</button>
+              <button onClick={editingComment ? handleUpdateComment : handleAddComment}>
+                {editingComment ? "Update" : "Submit"}
+              </button>
             </div>
           )}
         </div>

@@ -47,7 +47,7 @@ let TutorialService = class TutorialService {
             if (!userData) {
                 throw new common_1.NotFoundException('User not found in Firestore');
             }
-            return { idToken, email: user.email, username: userData.username };
+            return { idToken, email: user.email, username: userData.username, userId: user.uid };
         }
         catch (error) {
             throw new common_1.UnauthorizedException('Invalid credentials');
@@ -70,35 +70,76 @@ let TutorialService = class TutorialService {
         const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
         await (0, database_1.set)(courseRef, createCourseDto);
     }
-    async addCommentToCourse(courseId, commentId, createCommentDto) {
-        const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
-        const snapshot = await (0, database_1.get)(courseRef);
-        const course = snapshot.val();
-        if (!course) {
-            throw new common_1.NotFoundException('Course not found');
-        }
-        if (!course.comments) {
-            course.comments = {};
-        }
-        course.comments[commentId] = createCommentDto;
-        await (0, database_1.update)(courseRef, { comments: course.comments });
-        await this.updateCourseRating(courseId);
-    }
-    async deleteCommentFromCourse(courseId, commentId) {
-        const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
-        const snapshot = await (0, database_1.get)(courseRef);
-        const course = snapshot.val();
-        if (!course) {
-            throw new common_1.NotFoundException('Course not found');
-        }
-        if (course.comments && course.comments[commentId]) {
-            delete course.comments[commentId];
+    async addCommentToCourse(courseId, commentId, createCommentDto, userId) {
+        try {
+            console.log('Adding comment to course:', { courseId, commentId, createCommentDto, userId });
+            const userRef = (0, database_1.ref)(firebase_config_1.database, 'users/' + userId);
+            const userSnapshot = await (0, database_1.get)(userRef);
+            const userData = userSnapshot.val();
+            if (!userData) {
+                throw new common_1.NotFoundException('User not found in Realtime Database');
+            }
+            const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
+            const snapshot = await (0, database_1.get)(courseRef);
+            const course = snapshot.val();
+            if (!course) {
+                throw new common_1.NotFoundException('Course not found');
+            }
+            if (!course.comments) {
+                course.comments = {};
+            }
+            course.comments[commentId] = {
+                ...createCommentDto,
+                userId: userData.id,
+                username: userData.username
+            };
             await (0, database_1.update)(courseRef, { comments: course.comments });
             await this.updateCourseRating(courseId);
         }
-        else {
+        catch (error) {
+            console.error('Error adding comment:', error);
+            throw new common_1.InternalServerErrorException('Failed to add comment');
+        }
+    }
+    async deleteCommentFromCourse(courseId, commentId, userId) {
+        const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
+        const snapshot = await (0, database_1.get)(courseRef);
+        const course = snapshot.val();
+        if (!course) {
+            throw new common_1.NotFoundException('Course not found');
+        }
+        const comment = course.comments[commentId];
+        if (!comment) {
             throw new common_1.NotFoundException('Comment not found');
         }
+        if (comment.userId !== userId) {
+            throw new common_1.UnauthorizedException('You are not authorized to delete this comment');
+        }
+        delete course.comments[commentId];
+        await (0, database_1.update)(courseRef, { comments: course.comments });
+        await this.updateCourseRating(courseId);
+    }
+    async updateCommentInCourse(courseId, commentId, createCommentDto, userId) {
+        const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);
+        const snapshot = await (0, database_1.get)(courseRef);
+        const course = snapshot.val();
+        if (!course) {
+            throw new common_1.NotFoundException('Course not found');
+        }
+        const comment = course.comments[commentId];
+        if (!comment) {
+            throw new common_1.NotFoundException('Comment not found');
+        }
+        if (comment.userId !== userId) {
+            throw new common_1.UnauthorizedException('You are not authorized to update this comment');
+        }
+        course.comments[commentId] = {
+            ...createCommentDto,
+            userId,
+            username: comment.username,
+        };
+        await (0, database_1.update)(courseRef, { comments: course.comments });
+        await this.updateCourseRating(courseId);
     }
     async getCourseData(courseId) {
         const courseRef = (0, database_1.ref)(firebase_config_1.database, 'courses/' + courseId);

@@ -99,10 +99,22 @@
   padding: 20px;
   margin-bottom: 20px;
   background-color: #f9f9f9;
+  position: relative;
 }
 
 .comment_card p {
   margin: 10px 0;
+}
+
+.comment_actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: none;
+}
+
+.comment_card:hover .comment_actions {
+  display: flex;
 }
 
 .add_comment {

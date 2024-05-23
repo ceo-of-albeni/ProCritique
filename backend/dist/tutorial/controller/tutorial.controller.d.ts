@@ -9,6 +9,9 @@ export declare class TutorialController {
     constructor(tutorialService: TutorialService);
     loginUser(loginUserDto: LoginUserDto): Promise<{
         idToken: string;
+        email: string;
+        username: string;
+        userId: string;
     }>;
     createUserData(createUserDto: CreateUserDto): Promise<{
         id: string;
@@ -16,8 +19,9 @@ export declare class TutorialController {
     getUserData(userId: string): Promise<any>;
     getAllUsers(): Promise<any[]>;
     createCourseData(createCourseDto: CreateCourseDto): Promise<void>;
-    addCommentToCourse(courseId: string, createCommentDto: CreateCommentDto): Promise<void>;
-    deleteCommentFromCourse(courseId: string, commentId: string): Promise<void>;
+    addCommentToCourse(courseId: string, createCommentDto: CreateCommentDto, userId: string): Promise<void>;
+    deleteCommentFromCourse(courseId: string, commentId: string, userId: string): Promise<void>;
+    updateCommentInCourse(courseId: string, commentId: string, createCommentDto: CreateCommentDto, userId: string): Promise<void>;
     getCourseData(courseId: string): Promise<any>;
     getCoursesByCategory(category: string): Promise<any[]>;
     getAllCourses(): Promise<any[]>;

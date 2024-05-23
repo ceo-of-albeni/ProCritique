@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Param, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param, Query, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { TutorialService } from 'src/tutorial/service/tutorial.service';
 import { CreateUserDto } from 'src/dto/create-user.dto';
 import { CreateCourseDto } from 'src/dto/create-course.dto';
@@ -7,7 +7,6 @@ import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody, ApiParam } fr
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { LoginUserDto } from 'src/dto/login-user.dto';
-
 
 @ApiTags('tutorial')
 @Controller('tutorial')
@@ -21,9 +20,10 @@ export class TutorialController {
     description: 'The user has been successfully logged in.',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  async loginUser(@Body() loginUserDto: LoginUserDto): Promise<{ idToken: string }> {
+  async loginUser(@Body() loginUserDto: LoginUserDto): Promise<{ idToken: string, email: string, username: string, userId: string }> {
     return await this.tutorialService.loginUser(loginUserDto);
   }
+  
 
   @Post('createUser')
   @ApiOperation({ summary: 'Create a new user' })
@@ -63,21 +63,41 @@ export class TutorialController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async addCommentToCourse(
     @Param('courseId') courseId: string,
-    @Body() createCommentDto: CreateCommentDto
+    @Body() createCommentDto: CreateCommentDto,
+    @Body('userId') userId: string,
   ): Promise<void> {
+    console.log('Received userId:', userId); // Логирование userId
     const commentId = 'comment' + Date.now();
-    await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto);
+    if (!userId) {
+      throw new BadRequestException('User ID is missing');
+    }
+    await this.tutorialService.addCommentToCourse(courseId, commentId, createCommentDto, userId);
   }
+  
 
   @Post('deleteComment/:courseId/:commentId')
   @ApiOperation({ summary: 'Delete a comment from a course' })
   @ApiResponse({ status: 200, description: 'The comment has been successfully deleted.' })
-  @ApiResponse({ status: 404, description: 'Comment not found.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   async deleteCommentFromCourse(
     @Param('courseId') courseId: string,
-    @Param('commentId') commentId: string
+    @Param('commentId') commentId: string,
+    @Body('userId') userId: string,
   ): Promise<void> {
-    await this.tutorialService.deleteCommentFromCourse(courseId, commentId);
+    await this.tutorialService.deleteCommentFromCourse(courseId, commentId, userId);
+  }
+  
+  @Post('updateComment/:courseId/:commentId')
+  @ApiOperation({ summary: 'Update a comment in a course' })
+  @ApiResponse({ status: 200, description: 'The comment has been successfully updated.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async updateCommentInCourse(
+    @Param('courseId') courseId: string,
+    @Param('commentId') commentId: string,
+    @Body() createCommentDto: CreateCommentDto,
+    @Body('userId') userId: string,
+  ): Promise<void> {
+    await this.tutorialService.updateCommentInCourse(courseId, commentId, createCommentDto, userId);
   }
 
   @Get('getCourse/:courseId')
