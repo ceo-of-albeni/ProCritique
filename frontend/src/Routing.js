@@ -1,3 +1,4 @@
+// frontend/src/Routing.jsx
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage/HomePage";
@@ -9,6 +10,7 @@ import IOS from "./pages/IOS/IOS";
 import UXUI from "./pages/UXUi/UXUI";
 import RegistrationPage from "./pages/RegistrationPage/RegistrationPage";
 import Detailed from "./components/Detailed/Detailed";
+import HistoryPage from "./components/History/HistoryPage"; 
 
 const Routing = () => {
   const PUBLIC_ROUTES = [
@@ -61,6 +63,11 @@ const Routing = () => {
       link: "/courses/:id",
       element: <Detailed />,
       id: 10,
+    },
+    {
+      link: "/history",
+      element: <HistoryPage />, // Добавьте новый маршрут
+      id: 11,
     },
   ];
   return (

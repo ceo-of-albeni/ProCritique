@@ -13,6 +13,15 @@ import { LoginUserDto } from 'src/dto/login-user.dto';
 export class TutorialController {
   constructor(private readonly tutorialService: TutorialService) {}
 
+  @Get('getUserComments/:userId')
+  @ApiOperation({ summary: 'Get user comments' })
+  @ApiResponse({ status: 200, description: 'Return user comments.' })
+  @ApiResponse({ status: 404, description: 'User comments not found.' })
+  async getUserComments(@Param('userId') userId: string): Promise<any[]> {
+    return await this.tutorialService.getUserComments(userId);
+  }
+  
+
   @Post('login')
   @ApiOperation({ summary: 'Login a user' })
   @ApiResponse({

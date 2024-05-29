@@ -12,6 +12,45 @@ import { collection, doc, setDoc, getDoc, query as firestoreQuery, where, getDoc
 @Injectable()
 export class TutorialService {
 
+  async getUserComments(userId: string): Promise<any[]> {
+    const coursesRef = dbRef(database, 'courses');
+    const snapshot = await get(coursesRef);
+    const courses = snapshot.val();
+
+    const userComments = [];
+
+    console.log('Courses data:', courses);  // Логирование курсов
+    console.log('Searching comments for userId:', userId);  // Логирование поиска по userId
+
+    for (const courseId in courses) {
+      const course = courses[courseId];
+      if (course.comments) {
+        console.log(`Course ${courseId} has comments:`, course.comments);  // Логирование комментариев
+        for (const commentKey in course.comments) {
+          const comment = course.comments[commentKey];
+          console.log(`Checking comment ${commentKey}:`, comment);  // Логирование каждого комментария
+          if (comment.userId === userId) {
+            console.log(`Found matching comment ${commentKey} for user ${userId}`);  // Логирование совпадений
+            userComments.push({
+              courseName: course.course_name,
+              commentId: commentKey,
+              ...comment
+            });
+          }
+        }
+      }
+    }
+
+    if (userComments.length === 0) {
+      console.log('No comments found for user', userId);  // Логирование отсутствия комментариев
+      // throw new NotFoundException('User comments not found'); // Убираем выбрасывание ошибки, если комментарии не найдены
+    }
+
+    return userComments;
+  }
+  
+  
+
   async createUserData(createUserDto: CreateUserDto): Promise<{ id: string }> {
     const { email, password, username } = createUserDto;
 

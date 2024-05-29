@@ -4,6 +4,7 @@ import { CreateCourseDto } from 'src/dto/create-course.dto';
 import { CreateCommentDto } from 'src/dto/create-comment.dto';
 import { LoginUserDto } from 'src/dto/login-user.dto';
 export declare class TutorialService {
+    getUserComments(userId: string): Promise<any[]>;
     createUserData(createUserDto: CreateUserDto): Promise<{
         id: string;
     }>;

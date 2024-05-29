@@ -3,11 +3,11 @@ import { useParams } from "react-router-dom";
 import { coursesContext } from "../../contexts/coursesContext";
 import { authContext } from "../../contexts/authContext";
 import Rating from "@mui/material/Rating";
-import IconButton from '@mui/material/IconButton'; // Добавлено
-import EditIcon from '@mui/icons-material/Edit'; // Добавлено
-import DeleteIcon from '@mui/icons-material/Delete'; // Добавлено
+import IconButton from '@mui/material/IconButton'; 
+import EditIcon from '@mui/icons-material/Edit'; 
+import DeleteIcon from '@mui/icons-material/Delete'; 
 import "./detailed.css";
-
+  
 const Detailed = () => {
   const { getOneCourse, oneCourse, addCommentToCourse, deleteCommentFromCourse, updateCommentInCourse } = useContext(coursesContext);
   const { currentUser } = useContext(authContext);
@@ -106,6 +106,11 @@ const Detailed = () => {
               </div>
               <p className="cost">{oneCourse.cost}</p>
               <p>{oneCourse.detailed_description}</p>
+              {oneCourse.link && (
+                <p>
+                  <strong>Course Link:</strong> <a href={oneCourse.link} target="_blank" rel="noopener noreferrer">{oneCourse.link}</a>
+                </p>
+              )}
             </div>
           </div>
           {oneCourse.contacts && (

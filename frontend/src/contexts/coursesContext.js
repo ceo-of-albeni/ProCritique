@@ -10,6 +10,7 @@ const INIT_STATE = {
   oneCourse: [],
   photo: [],
   coursesByCategory: [],
+  comments: [],
 };
 
 function reducer(state = INIT_STATE, action) {
@@ -24,6 +25,10 @@ function reducer(state = INIT_STATE, action) {
       return { ...state, coursesByCategory: action.payload };
     case "SEARCH_COURSES":
       return { ...state, courses: action.payload };
+    case "GET_USER_COMMENTS":
+      return { ...state, comments: action.payload };
+    case "GET_USER_COMMENTS":
+        return { ...state, comments: action.payload };
     default:
       return state;
   }
@@ -36,6 +41,16 @@ const CoursesContextsProvider = ({ children }) => {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  const getUserComments = async (userId) => {
+    try {
+      const response = await axios.get(`/tutorial/getUserComments/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching user comments:", error);
+      throw error;
+    }
+  };
 
   async function getAllCourses() {
     try {
@@ -156,7 +171,6 @@ const CoursesContextsProvider = ({ children }) => {
         oneCourse: state.oneCourse,
         photo: state.photo,
         coursesByCategory: state.coursesByCategory,
-
         getAllCourses,
         getOneCourse,
         fetchByParams,
@@ -166,6 +180,7 @@ const CoursesContextsProvider = ({ children }) => {
         addCommentToCourse,
         deleteCommentFromCourse,
         updateCommentInCourse,
+        getUserComments
       }}>
       {children}
     </coursesContext.Provider>

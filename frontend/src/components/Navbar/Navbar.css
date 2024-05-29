@@ -23,7 +23,8 @@
   /* margin-left: 20px; */
 }
 
-.login_btn {
+.login_btn,
+.history_btn {
   color: white;
   font-size: 16px;
   padding: 10px 20px;
@@ -33,7 +34,8 @@
   margin-left: 20px;
 }
 
-.login_btn:hover {
+.login_btn:hover,
+.history_btn:hover {
   background: #f6f9fe;
   cursor: pointer;
 }

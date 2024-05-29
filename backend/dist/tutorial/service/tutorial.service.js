@@ -14,6 +14,36 @@ const storage_1 = require("firebase/storage");
 const uuid_1 = require("uuid");
 const firestore_1 = require("firebase/firestore");
 let TutorialService = class TutorialService {
+    async getUserComments(userId) {
+        const coursesRef = (0, database_1.ref)(firebase_config_1.database, 'courses');
+        const snapshot = await (0, database_1.get)(coursesRef);
+        const courses = snapshot.val();
+        const userComments = [];
+        console.log('Courses data:', courses);
+        console.log('Searching comments for userId:', userId);
+        for (const courseId in courses) {
+            const course = courses[courseId];
+            if (course.comments) {
+                console.log(`Course ${courseId} has comments:`, course.comments);
+                for (const commentKey in course.comments) {
+                    const comment = course.comments[commentKey];
+                    console.log(`Checking comment ${commentKey}:`, comment);
+                    if (comment.userId === userId) {
+                        console.log(`Found matching comment ${commentKey} for user ${userId}`);
+                        userComments.push({
+                            courseName: course.course_name,
+                            commentId: commentKey,
+                            ...comment
+                        });
+                    }
+                }
+            }
+        }
+        if (userComments.length === 0) {
+            console.log('No comments found for user', userId);
+        }
+        return userComments;
+    }
     async createUserData(createUserDto) {
         const { email, password, username } = createUserDto;
         try {

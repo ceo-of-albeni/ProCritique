@@ -1,0 +1,45 @@
+.history-page {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-item {
+  background: white;
+  margin-top: 10px;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.comment-detail {
+  margin-top: 10px;
+}
+
+.rating {
+  font-weight: bold;
+}
+
+.loader {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+}
+
+.comment-date {
+  color: #666;
+  font-size: 14px;
+  margin-top: 5px;
+}

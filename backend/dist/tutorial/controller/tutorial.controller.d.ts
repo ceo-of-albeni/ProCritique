@@ -7,6 +7,7 @@ import { LoginUserDto } from 'src/dto/login-user.dto';
 export declare class TutorialController {
     private readonly tutorialService;
     constructor(tutorialService: TutorialService);
+    getUserComments(userId: string): Promise<any[]>;
     loginUser(loginUserDto: LoginUserDto): Promise<{
         idToken: string;
         email: string;

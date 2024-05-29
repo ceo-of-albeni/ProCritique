@@ -25,6 +25,9 @@ let TutorialController = class TutorialController {
     constructor(tutorialService) {
         this.tutorialService = tutorialService;
     }
+    async getUserComments(userId) {
+        return await this.tutorialService.getUserComments(userId);
+    }
     async loginUser(loginUserDto) {
         return await this.tutorialService.loginUser(loginUserDto);
     }
@@ -80,6 +83,16 @@ let TutorialController = class TutorialController {
     }
 };
 exports.TutorialController = TutorialController;
+__decorate([
+    (0, common_1.Get)('getUserComments/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get user comments' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Return user comments.' }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'User comments not found.' }),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TutorialController.prototype, "getUserComments", null);
 __decorate([
     (0, common_1.Post)('login'),
     (0, swagger_1.ApiOperation)({ summary: 'Login a user' }),

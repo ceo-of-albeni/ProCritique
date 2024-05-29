@@ -13,6 +13,10 @@
   margin-top: 20px;
 }
 
+.card-container {
+  transition: transform 0.3s ease-in-out;
+}
+
 .sort_btn {
   color: rgb(106, 90, 205);
   background-color: white;
